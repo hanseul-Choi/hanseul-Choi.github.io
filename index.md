@@ -14,9 +14,9 @@ layout: default
 &nbsp;
 
 # Archive
-[go to archive](./archive/archive_main.html)
+[go to archive](/archive/archive_main.html)
 
 &nbsp;
 
 # Chronology
-[go to chronology](./chronology/chronology_main.html)
+[go to chronology](/chronology/chronology_main.html)

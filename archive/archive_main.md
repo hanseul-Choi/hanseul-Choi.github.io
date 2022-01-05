@@ -4,7 +4,7 @@ layout: default
 
 ## Welcome to archive page
 
-[ALGORITHM](../)
+[ALGORITHM](../algorithm/algorithm_main.md)
 
 
 [ANDROID](../)
