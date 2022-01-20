@@ -7,7 +7,7 @@ layout: default
 [ALGORITHM](../algorithm/algorithm_main.md)
 
 
-[ANDROID](../)
+[ANDROID](../android/android_main.md)
 
 
 [back](../)
