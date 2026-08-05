@@ -56,12 +56,18 @@ _PROJECTS_TEMPLATE = (
     "{% endblock %}"
 )
 _PROJECT_CARD_TEMPLATE = (
+    "{% set detail = project_details.get(project.slug) if project_details is defined else none %}"
     "<article><h2>{{ project.title }}</h2><p>{{ project.summary }}</p>"
     "{% if project.achievements %}<ul class='ach'>"
     "{% for a in project.achievements %}<li>{{ a }}</li>{% endfor %}</ul>{% endif %}"
-    "{% if detail_slugs is defined and project.slug in detail_slugs %}"
-    "<a class='detail-link' href='/projects/{{ project.slug }}/'>자세히 보기</a>{% endif %}"
+    "{% if detail %}"
+    '<a class="detail-link" href="#project-modal-{{ project.slug }}">자세히 보기</a>{% endif %}'
     "</article>"
+    "{% if detail %}"
+    '<div id="project-modal-{{ project.slug }}" class="modal-overlay">'
+    "<a href='#' class='modal-close'>x</a>{{ detail.body_html | collapsible_h3 }}"
+    "<a href='/projects/{{ project.slug }}/' class='modal-full-link'>전체 페이지에서 보기</a>"
+    "</div>{% endif %}"
 )
 _PROJECT_DETAIL_TEMPLATE = (
     "{% extends 'base.html' %}{% block content %}"

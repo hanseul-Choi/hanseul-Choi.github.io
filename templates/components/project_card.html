@@ -1,4 +1,5 @@
 {% import "components/icons.html" as icons %}
+{% set detail = project_details.get(project.slug) if project_details is defined else none %}
 <article class="project-card">
   <div class="project-thumb">
     {% if project.image_url %}
@@ -27,9 +28,46 @@
       {% if project.live_url %}
       <a class="btn btn-icon" href="{{ project.live_url }}">{{ icons.external_link() }}Live</a>
       {% endif %}
-      {% if detail_slugs is defined and project.slug in detail_slugs %}
-      <a class="btn btn-icon" href="/projects/{{ project.slug }}/">자세히 보기</a>
+      {% if detail %}
+      <a class="btn btn-icon" href="#project-modal-{{ project.slug }}">자세히 보기</a>
       {% endif %}
     </div>
   </div>
 </article>
+{% if detail %}
+<div id="project-modal-{{ project.slug }}" class="modal-overlay">
+  <div class="modal-box">
+    <a href="#" class="modal-close" aria-label="닫기">✕</a>
+    <article class="prose">
+      <h2>{{ project.title }}</h2>
+      <p class="lede">{{ project.summary }}</p>
+
+      {% if project.achievements %}
+      <ul class="achievements achievements-detail">
+        {% for item in project.achievements %}<li>{{ item }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+
+      {% if project.tags %}
+      <ul class="tags">
+        {% for tag in project.tags %}<li>{{ tag }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+
+      <div class="project-links detail-links">
+        {% if project.repo_url %}
+        <a class="btn btn-icon" href="{{ project.repo_url }}">{{ icons.github() }}Code</a>
+        {% endif %}
+        {% if project.live_url %}
+        <a class="btn btn-icon" href="{{ project.live_url }}">{{ icons.external_link() }}Live</a>
+        {% endif %}
+      </div>
+
+      <hr>
+
+      {{ detail.body_html | collapsible_h3 }}
+    </article>
+    <p class="modal-full-link"><a href="/projects/{{ project.slug }}/">전체 페이지에서 보기 →</a></p>
+  </div>
+</div>
+{% endif %}

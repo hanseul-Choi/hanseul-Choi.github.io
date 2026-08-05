@@ -569,6 +569,67 @@ main {
   color: var(--color-text-muted);
 }
 
+/* Project detail modal (pure CSS, :target — see project_card.html) --------- */
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  overflow-y: auto;
+  padding: 3rem 1rem;
+  background: rgba(10, 10, 12, 0.75);
+}
+
+.modal-overlay:target {
+  display: block;
+}
+
+body:has(.modal-overlay:target) {
+  overflow: hidden;
+}
+
+.modal-box {
+  position: relative;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 2rem;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.modal-close:hover {
+  color: var(--color-text);
+}
+
+.modal-close:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.modal-full-link {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
 /* Footer -------------------------------------------------------------------- */
 
 .site-footer {

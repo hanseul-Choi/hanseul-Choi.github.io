@@ -24,3 +24,14 @@
 - `detail_slugs`(상세 페이지가 있는 slug 집합)를 홈/프로젝트 목록 렌더링 컨텍스트에 넘겨서
   `project_card.html`이 "자세히 보기" 링크를 조건부로 표시하도록 함.
 - CLI(`build`)에 `--project-content-dir` 옵션 추가 (기본값 `content/projects/`).
+
+## 2026-08-06 — 프로젝트 상세를 모달로도 열람 가능하게
+- Home/프로젝트 목록 렌더링 컨텍스트에 `project_details`(slug → PageContent 전체 dict)를 추가로
+  넘김. `project_card.html`이 이걸로 각 프로젝트의 `detail`을 직접 조회해서, "자세히 보기" 링크가
+  `/projects/<slug>/` 대신 같은 페이지 안의 `#project-modal-<slug>` 앵커를 가리키고, 카드 바로
+  뒤에 풀 detail 본문을 담은 모달(`:target` 기반 순수 CSS)을 렌더링하도록 확장.
+- `/projects/<slug>/` 전용 페이지는 그대로 유지 — 모달 안에 "전체 페이지에서 보기" 링크로 연결
+  (직접 링크 공유·SEO 목적).
+- 모달 안에서는 구조도 이미지에 `lightbox_images`를 적용하지 않음 — 둘 다 URL 프래그먼트(`:target`)
+  기반이라, 모달 안에서 라이트박스를 열면 그 프래그먼트가 모달의 것과 달라져 모달 자체가 닫혀버리는
+  충돌이 생김. 전체 페이지(`project_detail.html`)에서만 라이트박스 사용.
