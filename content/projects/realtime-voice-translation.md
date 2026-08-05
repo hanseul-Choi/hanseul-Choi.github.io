@@ -50,38 +50,29 @@ PostgreSQL 운영 환경을 처음부터 설계하고 구축**했다.
 
 ## 구조도
 
-_실제 구조도 이미지는 추후 추가 예정입니다. 우선 텍스트로 정리합니다._
+![외국인 근로자 실시간 음성 번역 서비스 아키텍처](/static/images/projects/realtime-voice-translation/architecture.svg)
 
-```
-[한국인 관리자] → 방 생성/마이크 입력/QR 공유 → [Web Frontend]
-        │ WebSocket
-        ▼
-[AWS Public Entry: Route 53 → WAF → Public ALB]
-        ▼
-┌─────────────────────────────────────────────┐
-│              Private EKS Cluster            │
-│                                              │
-│  [app Node Group]        [app-db Node Group] │
-│  Frontend/Backend API/    PostgreSQL 전용     │
-│  WebSocket/Redis Client   (taint 적용)        │
-│                                              │
-│  [build Node Group]                          │
-│  Jenkins / ArgoCD                            │
-│                                              │
-│  HPA: Pod 1~5개 · Karpenter: app Node 자동 확장│
-└──────────────────┬───────────────────────────┘
-                   │ NLB / 고정 통신 경로
-                   ▼
-        [사내 중계 서버]
-        Room별 AWS Backend WebSocket 1개
-        H200 STT 요청 중계 · 결과 분배
-                   ▼
-        [H200 Model Server]
-        STT · NLP/번역 · 건설 용어집 RAG · TTS
-        Nginx 단일 포트 라우팅
-                   ▼
-        선택 언어로 WebSocket 전달 → [외국인 근로자 모바일 웹]
-```
+AWS와 사내 인프라(H200 모델 서버) 두 영역으로 나뉜다. (고객사 리소스 이름은 "D 건설사" 익명
+처리 방침에 맞춰 `client-*`, 도메인은 `example.com`으로 가렸다.)
+
+**AWS 쪽 — 관리자 웹 진입 경로**
+
+1. 사용자는 Route 53 → AWS WAF(IP·지역·SQL Injection 차단) → Public ALB를 거쳐 Private EKS
+   Cluster로 들어온다.
+2. EKS 내부는 워크로드 특성별로 Node Group을 나눴다 — `app`(Frontend/Backend Deployment),
+   `app-db`(PostgreSQL + PgBouncer, max-connection 120, EBS gp3 PVC 50Gi), `build`(Jenkins +
+   ArgoCD).
+3. 오토스케일링은 두 단으로 걸려 있다 — HPA는 CPU 80% 이상이면 15초 주기로 Pod를 늘리고,
+   Karpenter는 스케줄되지 못한 Pod가 생기면 10초 주기로 app Node를 최대 3대까지 늘린다.
+4. 운영 접근은 SSM 기반 Bastion Server로, 로그·리소스는 CloudWatch로 모은다.
+5. Private Subnet의 outbound 트래픽은 NAT Gateway의 고정 Elastic IP로 나가 사내망 방화벽을 통과한다.
+
+**사내 인프라 — H200 모델 서버**
+
+- NAT의 고정 IP가 사내 NLB(VIP) → k8s API로 연결되고, 3개 노드(A/B/C)가 각각 전용 중계 서버
+  (relay server)와 1:1로 연결된다 (Room별 AWS Backend WebSocket 1개 원칙과 대응).
+- H200 서버에는 STT(2700), NLP(8080) 서비스가 떠 있고, Nginx(7700) 하나가 단일 진입점으로
+  두 서비스를 라우팅한다.
 
 **운영 및 배포 구조**
 
