@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Projects</h1>
+{% if projects %}
+<div class="project-grid">
+  {% for project in projects %}
+    {% include "components/project_card.html" %}
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">아직 등록된 프로젝트가 없습니다.</p>
+{% endif %}
+{% endblock %}

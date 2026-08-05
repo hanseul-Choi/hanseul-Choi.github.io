@@ -1,32 +1,18 @@
-# Vim
-*~
-*.sw[p_]
+# Build output
+dist/
 
-# IntelliJ IDEA
-*.idea
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
-# Sublime Text
-*.sublime-project
-*.sublime-workspace
-
-# Ruby Gem
-*.gem
-.bundle
-Gemfile.lock
-**/vendor/bundle
-
-# Node.js and NPM
-node_modules
-npm-debug.log*
-package-lock.json
-codekit-config.json
-
-# macOS
+# Editors / OS
 .DS_Store
-
-# Jekyll generated files
-.jekyll-cache
-.jekyll-metadata
-.sass-cache
-_asset_bundler_cache
-_site
+.idea/
+*.swp

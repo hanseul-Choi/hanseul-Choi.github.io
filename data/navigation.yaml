@@ -1,0 +1,9 @@
+# Site navigation menu. Validated against sitebuilder.contracts.NavItem.
+- title: Home
+  url: /
+- title: About
+  url: /about/
+- title: Projects
+  url: /projects/
+- title: Contact
+  url: /contact/

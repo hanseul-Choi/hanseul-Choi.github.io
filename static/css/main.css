@@ -1,0 +1,33 @@
+/* Minimal placeholder styling — replace once the real design is decided. */
+
+:root {
+  color-scheme: light dark;
+  --max-width: 48rem;
+}
+
+body {
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  max-width: var(--max-width);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.6;
+}
+
+.site-nav ul {
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 1rem;
+}
+
+.project-card {
+  border: 1px solid #8884;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}

@@ -1,0 +1,11 @@
+# Project list. Validated against sitebuilder.contracts.Project.
+# Empty until the project write-up document is provided. Example shape:
+#
+# - slug: example-project
+#   title: "Example Project"
+#   summary: "One or two sentence description."
+#   tags: ["python", "cli"]
+#   repo_url: "https://github.com/hanseul-Choi/example-project"
+#   live_url: "https://example.com"
+#   order: 1
+[]

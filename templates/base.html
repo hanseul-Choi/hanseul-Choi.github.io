@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ site.title }}{% if page is defined %} · {{ page.title }}{% endif %}</title>
+  <meta name="description" content="{{ site.description }}">
+  <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+  {% include "components/nav.html" %}
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <footer>
+    <p>&copy; {{ site.author_name }}</p>
+  </footer>
+</body>
+</html>
