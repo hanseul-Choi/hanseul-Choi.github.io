@@ -95,7 +95,13 @@ def build_site(
             current_path = "/" if is_home else f"/{page.slug}/"
             template_name = "home.html" if is_home else "page.html"
             template_kwargs = (
-                {"featured_projects": projects[:3], "detail_slugs": detail_slugs} if is_home else {}
+                {
+                    "featured_projects": projects[:3],
+                    "detail_slugs": detail_slugs,
+                    "project_details": project_details,
+                }
+                if is_home
+                else {}
             )
 
             html = render_page(
@@ -118,6 +124,7 @@ def build_site(
             projects=projects,
             current_path="/projects/",
             detail_slugs=detail_slugs,
+            project_details=project_details,
         )
         _write(resolved_output / "projects" / "index.html", projects_html)
         pages_written.append("projects/index.html")

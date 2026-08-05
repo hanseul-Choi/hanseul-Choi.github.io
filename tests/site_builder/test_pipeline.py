@@ -66,13 +66,32 @@ class TestProjectDetailPages:
         )
         assert "Architecture" in detail_html
 
-    def test_card_links_to_detail_page_when_it_exists(self, site_paths: SitePaths) -> None:
+    def test_card_links_to_modal_when_detail_exists(self, site_paths: SitePaths) -> None:
         result = _build(site_paths)
         projects_html = (result.output_dir / "projects" / "index.html").read_text(encoding="utf-8")
-        assert "/projects/demo/" in projects_html
+        assert 'href="#project-modal-demo"' in projects_html
         assert "자세히 보기" in projects_html
 
-    def test_no_detail_page_or_link_when_markdown_is_missing(self, site_paths: SitePaths) -> None:
+    def test_modal_contains_full_detail_body_and_link_to_real_page(
+        self, site_paths: SitePaths
+    ) -> None:
+        result = _build(site_paths)
+        projects_html = (result.output_dir / "projects" / "index.html").read_text(encoding="utf-8")
+
+        assert 'id="project-modal-demo"' in projects_html
+        assert "Architecture" in projects_html  # detail.body_html rendered inline
+        assert (
+            "/projects/demo/" in projects_html
+        )  # "전체 페이지에서 보기" link back to the real page
+
+    def test_modal_also_appears_on_home_for_featured_projects(self, site_paths: SitePaths) -> None:
+        result = _build(site_paths)
+        home_html = (result.output_dir / "index.html").read_text(encoding="utf-8")
+        assert 'id="project-modal-demo"' in home_html
+
+    def test_no_detail_page_link_or_modal_when_markdown_is_missing(
+        self, site_paths: SitePaths
+    ) -> None:
         (site_paths.project_content_dir / "demo.md").unlink()
         result = _build(site_paths)
 
@@ -80,6 +99,7 @@ class TestProjectDetailPages:
         assert not (site_paths.output_dir / "projects" / "demo").exists()
         projects_html = (result.output_dir / "projects" / "index.html").read_text(encoding="utf-8")
         assert "자세히 보기" not in projects_html
+        assert "project-modal-demo" not in projects_html
 
     def test_project_without_matching_slug_gets_no_detail_page(self, site_paths: SitePaths) -> None:
         # The detail file's stem ("demo") must match a project's slug exactly;
