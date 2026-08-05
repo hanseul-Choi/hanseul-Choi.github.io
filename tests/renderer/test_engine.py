@@ -10,6 +10,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
+from bs4 import BeautifulSoup
 
 from sitebuilder.renderer import RenderError, create_environment, render_page
 
@@ -21,6 +22,7 @@ def templates_dir(tmp_path: Path) -> Path:
     (tmp_path / "initials.html").write_text("{{ name | initials }}", encoding="utf-8")
     (tmp_path / "year.html").write_text("{{ build_year() }}", encoding="utf-8")
     (tmp_path / "broken_include.html").write_text('{% include "missing.html" %}', encoding="utf-8")
+    (tmp_path / "collapsible.html").write_text("{{ body | collapsible_h3 }}", encoding="utf-8")
     return tmp_path
 
 
@@ -88,3 +90,62 @@ class TestBuildYearGlobal:
     def test_returns_current_utc_year(self, templates_dir: Path) -> None:
         env = create_environment(templates_dir)
         assert render_page(env, "year.html") == str(datetime.now(UTC).year)
+
+
+class TestCollapsibleH3Filter:
+    def test_wraps_single_h3_and_its_content(self, templates_dir: Path) -> None:
+        env = create_environment(templates_dir)
+        html = "<h2>문제 및 해결</h2><h3>1. 문제</h3><p>내용</p>"
+        output = render_page(env, "collapsible.html", body=html)
+        soup = BeautifulSoup(output, "html.parser")
+
+        details = soup.find_all("details", class_="collapsible")
+        assert len(details) == 1
+        assert details[0].summary.get_text(strip=True) == "1. 문제"
+        assert details[0].p.get_text(strip=True) == "내용"
+        assert soup.find("h3") is None  # replaced, not just wrapped alongside
+
+    def test_stops_at_next_h3_not_leaking_into_next_section(self, templates_dir: Path) -> None:
+        env = create_environment(templates_dir)
+        html = "<h3>1. 문제 A</h3><p>A 내용</p><h3>2. 문제 B</h3><p>B 내용</p>"
+        output = render_page(env, "collapsible.html", body=html)
+        soup = BeautifulSoup(output, "html.parser")
+
+        details = soup.find_all("details", class_="collapsible")
+        assert len(details) == 2
+        assert details[0].summary.get_text(strip=True) == "1. 문제 A"
+        assert "A 내용" in details[0].get_text()
+        assert "B 내용" not in details[0].get_text()
+        assert details[1].summary.get_text(strip=True) == "2. 문제 B"
+        assert "B 내용" in details[1].get_text()
+
+    def test_stops_at_following_h2(self, templates_dir: Path) -> None:
+        env = create_environment(templates_dir)
+        html = "<h3>1. 문제</h3><p>문제 내용</p><h2>성과</h2><p>성과 내용</p>"
+        output = render_page(env, "collapsible.html", body=html)
+        soup = BeautifulSoup(output, "html.parser")
+
+        details = soup.find("details", class_="collapsible")
+        assert "문제 내용" in details.get_text()
+        assert "성과 내용" not in details.get_text()
+        # the h2 section survives outside the accordion, untouched
+        assert soup.find("h2").get_text(strip=True) == "성과"
+
+    def test_html_without_h3_is_left_effectively_unchanged(self, templates_dir: Path) -> None:
+        env = create_environment(templates_dir)
+        html = "<h2>개요</h2><p>그냥 내용</p>"
+        output = render_page(env, "collapsible.html", body=html)
+        soup = BeautifulSoup(output, "html.parser")
+
+        assert soup.find("details") is None
+        assert "그냥 내용" in output
+
+    def test_preserves_rich_content_like_lists_and_code_blocks(self, templates_dir: Path) -> None:
+        env = create_environment(templates_dir)
+        html = "<h3>1. 문제</h3><ul><li>항목</li></ul><pre><code>code here</code></pre>"
+        output = render_page(env, "collapsible.html", body=html)
+        soup = BeautifulSoup(output, "html.parser")
+
+        details = soup.find("details", class_="collapsible")
+        assert details.find("li").get_text(strip=True) == "항목"
+        assert details.find("code").get_text(strip=True) == "code here"
