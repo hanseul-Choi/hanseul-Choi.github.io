@@ -71,8 +71,9 @@ class TestInitialsFilter:
         ("name", "expected"),
         [
             ("Hanseul Choi", "HC"),
-            ("최한슬", "최"),
-            ("cher", "C"),
+            ("최한슬", "한슬"),  # single-token Korean name -> last 2 chars (given name)
+            ("최", "최"),  # single-character token -> itself, no crash
+            ("cher", "C"),  # single-token ASCII name -> first letter only
             ("  ", "?"),
             ("", "?"),
             ("  Han  Seul  Choi  ", "HC"),
