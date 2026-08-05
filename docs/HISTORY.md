@@ -21,3 +21,11 @@
   allowlist를 "스킴이 있으면 무조건 외부"로 일반화해서 근본 수정 (`src/sitebuilder/link_checker/docs/HISTORY.md`).
 - **위험/후속 작업**: 더미 프로젝트/구조도는 Artifact 미리보기로만 확인했고 실제 `data/`, `content/`는
   건드리지 않음. 실제 콘텐츠 반영은 프로젝트 문서 수령 후.
+
+## 2026-08-05 — 실제 콘텐츠 반영
+- **무엇**: 사용자가 전달한 경력 문서로 `data/site.yaml`(이름 "최한슬", 소개, GitHub/LinkedIn/Email
+  소셜 링크), `data/projects.yaml`(프로젝트 3개 + 성과), `content/pages/{index,about,contact}.md`,
+  `content/projects/*.md`(프로젝트별 상세 — 인프라 구조/트러블슈팅) 전부 placeholder에서 실제 내용으로 교체.
+- **왜**: 사용자가 LinkedIn 경력 내용을 전달하고 이름/이메일 공개 여부/LinkedIn URL을 확정.
+- **위험/후속 작업**: 프로젝트 상세 페이지에는 아직 실제 스크린샷/구조도 이미지가 없음 (텍스트만).
+  이미지 파일이 생기면 `data/projects.yaml`의 `image_url`과 각 상세 md의 이미지 삽입만 추가하면 됨.

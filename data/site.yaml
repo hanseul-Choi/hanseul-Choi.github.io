@@ -1,8 +1,12 @@
 # Global site metadata. Validated against sitebuilder.contracts.SiteConfig.
-title: "TODO: 사이트 제목"
-description: "TODO: 사이트 한 줄 소개"
+title: "최한슬"
+description: "모델을 안정적이고 빠르며 효율적으로 배포해, 사람들의 일상에 자연스럽게 녹아드는 서비스를 만드는 개발자입니다."
 base_url: "https://hanseul-Choi.github.io"
-author_name: "TODO: 이름"
+author_name: "최한슬"
 social_links:
   - title: GitHub
     url: https://github.com/hanseul-Choi
+  - title: LinkedIn
+    url: https://www.linkedin.com/in/%ED%95%9C%EC%8A%AC-%EC%B5%9C-abbba6257/
+  - title: Email
+    url: mailto:hschoi5542@gmail.com
