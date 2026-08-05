@@ -50,38 +50,24 @@ PoC 형태로 진행됐지만 실제 계양역 관제 담당자가 업무에 사
 
 ## 구조도
 
-_실제 구조도 이미지는 추후 추가 예정입니다. 우선 텍스트로 정리합니다._
+![공항철도 실시간 혼잡도 분석 시스템 아키텍처](/static/images/projects/airport-rail-crowd-monitoring/architecture.svg)
 
-```
-[계양역 RTSP CCTV 48채널]
-        │  ID / Password 기반 연결
-        ▼
-[OpenCV Video Capture]
-        │  카메라별 수집 스레드 · 최신 프레임 유지
-        │  연결 상태 확인 · 실패 시 재시도
-        ▼
-[Nginx] — 카메라 번호 기준 upstream 분기
-        │  짝수 채널 → Backend A / GPU 0
-        │  홀수 채널 → Backend B / GPU 1
-        │  에스컬레이터 채널 → 캐리어 탐지 경로
-        ▼
-┌───────────────────────┬───────────────────────┐
-│ FastAPI Backend A/GPU0 │ FastAPI Backend B/GPU1 │
-│ YOLO 로딩·warm-up      │ YOLO 로딩·warm-up      │
-│ 프레임 단위 추론       │ 프레임 단위 추론       │
-│ 바운딩박스 변환·혼잡도 │ 바운딩박스 변환·혼잡도 │
-└───────────┬───────────┴───────────┬───────────┘
-            ▼                       ▼
-      [PostgreSQL]              [Coturn]
-      프레임별 결과·5분 통계     WebRTC ICE Server
-            └───────────┬───────────┘
-                        ▼
-                [Frontend Container]
-      실시간 스트리밍 · 바운딩박스 · 혼잡도 우선순위
-      시간/날짜/카메라별 통계 · 1시간 그래프 · 혼잡 알림 · 보고서
+12개 채널의 CCTV가 RTSP로 폐쇄망 단일 서버에 연결된다. 서버 사양은 다음과 같다.
 
-[폐쇄망 단일 Linux 서버: Docker Compose로 Nginx·Backend×2·Frontend·Coturn·PostgreSQL 운영]
-```
+- **CPU** W5-3553X × 1, **Mem** DDR5 4800 32GB × 4
+- **Disk** 990 Pro NVMe 1TB(시스템/모델) + Seagate SkyHawk AI 10TB(영상/데이터)
+- **GPU** RTX 5090 32GB × 2
+- **OS/런타임** Ubuntu 24.04, CUDA 12.4, PyTorch 2.5.1 + cu124, Docker
+
+Docker로 띄운 컨테이너들은 이렇게 연결된다.
+
+1. RTSP로 들어온 1~6채널 영상은 GPU 0, 7~12채널 영상은 GPU 1이 나눠 맡아 `Master` 컨테이너의
+   `Model`(캐리어·혼잡도 탐지)에서 추론하고, 결과 이미지를 같은 컨테이너의 `FastAPI`로 전달한다.
+2. `FastAPI`는 RTSP 원본 영상과 `Model`의 추론 결과 이미지를 함께 받아 `WebRTC` 컨테이너로
+   넘기고, 상태·설정 정보는 `Postgre`(PostgreSQL)에 별도로 기록한다.
+3. `WebRTC`는 12채널 영상을 `FrontEnd`로 스트리밍하고, `FrontEnd`는 `Option API`로 `FastAPI`와
+   설정값을 주고받는다.
+4. `FrontEnd`가 만든 웹페이지는 `Nginx`를 거쳐 관제 담당자의 브라우저로 전달된다.
 
 ## 문제 및 해결
 
