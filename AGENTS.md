@@ -1,7 +1,7 @@
 # Portfolio Site — Agent & Contributor Rules
 
 이 문서는 Codex, Claude Code, Gemini CLI 및 사람이 이 저장소에서 함께 작업할 때 지키는 공유 규칙이다.
-이 저장소는 Python 기반 커스텀 정적 사이트 빌더(하니스)로, `src/sitebuilder/` 아래 기능 모듈로
+이 저장소는 Python 기반 커스텀 정적 사이트 빌더(하네스)로, `src/sitebuilder/` 아래 기능 모듈로
 나뉘어 있다. 모듈 구조는 `docs/architecture/harness-overview.md`를 참고한다.
 
 1. 작업 전 항상 `README.md`, 관련 ADR(`docs/adr/`), 대상 모듈의 `docs/POLICY.md`(있다면 `docs/THREAT_MODEL.md`),
