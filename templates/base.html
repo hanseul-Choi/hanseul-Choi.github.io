@@ -3,17 +3,32 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ site.title }}{% if page is defined %} · {{ page.title }}{% endif %}</title>
+  <title>{{ site.title }}{% if page is defined and page.slug != "index" %} · {{ page.title }}{% endif %}</title>
   <meta name="description" content="{{ site.description }}">
   <link rel="stylesheet" href="/static/css/main.css">
 </head>
 <body>
-  {% include "components/nav.html" %}
+  {% import "components/icons.html" as icons %}
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">{{ site.title }}</a>
+      {% include "components/nav.html" %}
+    </div>
+  </header>
   <main>
     {% block content %}{% endblock %}
   </main>
-  <footer>
-    <p>&copy; {{ site.author_name }}</p>
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>&copy; {{ build_year() }} {{ site.author_name }}</p>
+      {% if site.social_links %}
+      <ul class="social-links">
+        {% for link in site.social_links %}
+        <li><a href="{{ link.url }}" aria-label="{{ link.title }}">{{ icons.for_link(link.title) }}</a></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
   </footer>
 </body>
 </html>

@@ -20,6 +20,7 @@ runner = CliRunner()
 def _build_args(site_paths: SitePaths, **overrides: str) -> list[str]:
     args = {
         "--content-dir": str(site_paths.content_dir),
+        "--project-content-dir": str(site_paths.project_content_dir),
         "--data-dir": str(site_paths.data_dir),
         "--templates-dir": str(site_paths.templates_dir),
         "--static-dir": str(site_paths.static_dir),

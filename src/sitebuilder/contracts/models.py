@@ -52,8 +52,10 @@ class Project(BaseModel):
     title: str
     summary: str
     tags: list[str] = []
+    achievements: list[str] = []
     repo_url: str | None = None
     live_url: str | None = None
+    image_url: str | None = None
     order: int = 0
 
     @field_validator("slug")

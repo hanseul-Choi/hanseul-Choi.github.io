@@ -57,10 +57,20 @@ class TestCheckInternalLinks:
             "mailto:me@example.com",
             "tel:+123",
             "#section",
+            "blob:https://example.com/9a1b2c3d",
         ],
     )
     def test_external_and_anchor_links_are_skipped(self, tmp_path: Path, href: str) -> None:
         _write(tmp_path / "index.html", f'<a href="{href}">link</a>')
+        assert check_internal_links(tmp_path) == []
+
+    def test_data_uri_image_is_skipped_not_crashed_on(self, tmp_path: Path) -> None:
+        # Regression test: any URI scheme (not just an http/https/mailto/tel
+        # allowlist) must be treated as external. A `data:` URI previously
+        # fell through the old allowlist check and got stat()'d as if it
+        # were a filesystem path, crashing with OSError("File name too long").
+        data_uri = "data:image/svg+xml;base64," + "A" * 500
+        _write(tmp_path / "index.html", f'<img src="{data_uri}" alt="diagram">')
         assert check_internal_links(tmp_path) == []
 
     def test_relative_link_to_existing_sibling_page_is_ok(self, tmp_path: Path) -> None:

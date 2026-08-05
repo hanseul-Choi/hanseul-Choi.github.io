@@ -13,7 +13,6 @@ from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 
-_EXTERNAL_SCHEMES = {"http", "https", "mailto", "tel"}
 _SKIP_PREFIXES = ("#",)
 
 
@@ -62,9 +61,15 @@ def _resolve_internal_target(html_file: Path, output_dir: Path, href: str) -> Pa
         return None
 
     parsed = urlparse(href)
-    if parsed.scheme in _EXTERNAL_SCHEMES:
+    if parsed.scheme:
+        # Any explicit scheme (http, https, mailto, tel, data, blob, ...) is
+        # never a same-site relative path — treat it as external/skippable
+        # rather than allowlisting specific schemes one at a time. A `data:`
+        # URI in particular has no meaningful "path" to resolve on disk; the
+        # previous allowlist let it fall through and crash with an OSError
+        # ("File name too long") from trying to stat a base64 blob as a path.
         return None
-    if parsed.netloc:  # protocol-relative or scheme-less external link
+    if parsed.netloc:  # protocol-relative external link, e.g. "//example.com/x"
         return None
 
     path_part = parsed.path

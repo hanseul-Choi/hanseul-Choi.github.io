@@ -6,6 +6,7 @@ src/sitebuilder/renderer/docs/THREAT_MODEL.md.
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -17,6 +18,9 @@ from sitebuilder.renderer import RenderError, create_environment, render_page
 def templates_dir(tmp_path: Path) -> Path:
     (tmp_path / "greeting.html").write_text("Hello, {{ name }}!", encoding="utf-8")
     (tmp_path / "safe.html").write_text("{{ body | safe }}", encoding="utf-8")
+    (tmp_path / "initials.html").write_text("{{ name | initials }}", encoding="utf-8")
+    (tmp_path / "year.html").write_text("{{ build_year() }}", encoding="utf-8")
+    (tmp_path / "broken_include.html").write_text('{% include "missing.html" %}', encoding="utf-8")
     return tmp_path
 
 
@@ -55,3 +59,31 @@ class TestRenderPage:
         env = create_environment(templates_dir)
         output = render_page(env, "safe.html", body="<p>trusted</p>")
         assert output == "<p>trusted</p>"
+
+    def test_broken_nested_include_raises_render_error(self, templates_dir: Path) -> None:
+        env = create_environment(templates_dir)
+        with pytest.raises(RenderError, match="Failed to render"):
+            render_page(env, "broken_include.html")
+
+
+class TestInitialsFilter:
+    @pytest.mark.parametrize(
+        ("name", "expected"),
+        [
+            ("Hanseul Choi", "HC"),
+            ("최한슬", "최"),
+            ("cher", "C"),
+            ("  ", "?"),
+            ("", "?"),
+            ("  Han  Seul  Choi  ", "HC"),
+        ],
+    )
+    def test_initials_filter(self, templates_dir: Path, name: str, expected: str) -> None:
+        env = create_environment(templates_dir)
+        assert render_page(env, "initials.html", name=name) == expected
+
+
+class TestBuildYearGlobal:
+    def test_returns_current_utc_year(self, templates_dir: Path) -> None:
+        env = create_environment(templates_dir)
+        assert render_page(env, "year.html") == str(datetime.now(UTC).year)

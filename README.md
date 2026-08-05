@@ -7,11 +7,9 @@
 
 ## 이 저장소는 무엇인가
 
-Jekyll 테마를 쓰는 대신, **Python + Jinja2로 직접 만든 작은 정적 사이트 빌더("하니스")**로
-포트폴리오를 빌드합니다. GitHub Pages는 Python 빌드를 네이티브 지원하지 않으므로, GitHub
-Actions가 이 빌더로 사이트를 빌드한 뒤 결과물(`dist/`)만 GitHub Pages에 배포합니다.
+**Python + Jinja2**로 만든 모듈화된 정적 사이트 빌더로 포트폴리오를 빌드합니다. GitHub Actions가
+빌드한 뒤 결과물(`dist/`)만 GitHub Pages에 배포합니다.
 
-이 선택의 배경은 [`docs/adr/0001-python-jinja2-harness.md`](docs/adr/0001-python-jinja2-harness.md)에,
 저장소 작업 규칙(테스트 우선, 모듈 경계, 검증 게이트 등)은 [`AGENTS.md`](AGENTS.md)에 있습니다.
 
 ## 모듈 구조
@@ -62,8 +60,6 @@ make verify
 
 개별 명령은 `make lint`, `make typecheck`, `make imports`, `make test`로 따로 실행할 수 있습니다.
 커밋 전 자동 실행을 원하면 `pre-commit install`로 `.pre-commit-config.yaml`을 활성화하세요.
-
-현재 테스트는 77개, 커버리지 95%입니다 (`make verify`로 직접 재현 가능).
 
 ## CI/CD
 

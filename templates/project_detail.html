@@ -1,35 +1,36 @@
+{% extends "base.html" %}
 {% import "components/icons.html" as icons %}
-<article class="project-card">
-  <div class="project-thumb">
-    {% if project.image_url %}
-    <img src="{{ project.image_url }}" alt="{{ project.title }} screenshot">
-    {% else %}
-    {{ icons.folder() }}
-    {% endif %}
-  </div>
-  <div class="project-body">
-    <h2>{{ project.title }}</h2>
-    <p>{{ project.summary }}</p>
+{% block content %}
+<div class="wrap page">
+  <p class="back-link"><a href="/projects/">← 모든 프로젝트</a></p>
+  <article class="prose">
+    <h1>{{ project.title }}</h1>
+    <p class="lede">{{ project.summary }}</p>
+
     {% if project.achievements %}
-    <ul class="achievements">
+    <ul class="achievements achievements-detail">
       {% for item in project.achievements %}<li>{{ item }}</li>{% endfor %}
     </ul>
     {% endif %}
+
     {% if project.tags %}
     <ul class="tags">
       {% for tag in project.tags %}<li>{{ tag }}</li>{% endfor %}
     </ul>
     {% endif %}
-    <div class="project-links">
+
+    <div class="project-links detail-links">
       {% if project.repo_url %}
       <a class="btn btn-icon" href="{{ project.repo_url }}">{{ icons.github() }}Code</a>
       {% endif %}
       {% if project.live_url %}
       <a class="btn btn-icon" href="{{ project.live_url }}">{{ icons.external_link() }}Live</a>
       {% endif %}
-      {% if detail_slugs is defined and project.slug in detail_slugs %}
-      <a class="btn btn-icon" href="/projects/{{ project.slug }}/">자세히 보기</a>
-      {% endif %}
     </div>
-  </div>
-</article>
+
+    <hr>
+
+    {{ detail.body_html | safe }}
+  </article>
+</div>
+{% endblock %}
