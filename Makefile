@@ -1,12 +1,9 @@
 .PHONY: install lint format typecheck imports test build verify serve clean
 
-VENV := .venv
-PYTHON := $(VENV)/bin/python
 UV := uv
 
 install:
-	$(UV) venv --python 3.11 --allow-existing
-	$(UV) pip install -e ".[dev]"
+	$(UV) sync --extra dev
 
 lint:
 	$(UV) run ruff check .

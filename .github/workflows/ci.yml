@@ -24,8 +24,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v3
         with:
-          python-version: "3.11"
-      - run: uv pip install --system -e ".[dev]"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      # uv sync reads .python-version / requires-python and creates .venv;
+      # `uv pip install --system` was removed here because it tried to
+      # install into the runner's PEP-668 "externally managed" system
+      # Python, which fails on current ubuntu-latest images.
+      - run: uv sync --extra dev --locked
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run mypy
@@ -40,8 +45,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v3
         with:
-          python-version: "3.11"
-      - run: uv pip install --system -e ".[dev]"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - run: uv sync --locked
       - run: uv run python -m sitebuilder build
       - uses: actions/upload-pages-artifact@v3
         with:
