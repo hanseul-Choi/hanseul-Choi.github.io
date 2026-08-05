@@ -1,0 +1,13 @@
+<article class="project-card">
+  <h2>{{ project.title }}</h2>
+  <p>{{ project.summary }}</p>
+  {% if project.tags %}
+  <ul class="tags">
+    {% for tag in project.tags %}<li>{{ tag }}</li>{% endfor %}
+  </ul>
+  {% endif %}
+  <p class="links">
+    {% if project.repo_url %}<a href="{{ project.repo_url }}">Repo</a>{% endif %}
+    {% if project.live_url %}<a href="{{ project.live_url }}">Live</a>{% endif %}
+  </p>
+</article>

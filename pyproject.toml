@@ -1,0 +1,111 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sitebuilder"
+version = "0.1.0"
+description = "Modular Python/Jinja2 static site harness for hanseul-Choi.github.io"
+requires-python = ">=3.11"
+dependencies = [
+  "jinja2>=3.1,<4",
+  "pydantic>=2.6,<3",
+  "pyyaml>=6.0,<7",
+  "python-frontmatter>=1.1,<2",
+  "markdown>=3.6,<4",
+  "beautifulsoup4>=4.12,<5",
+  "typer>=0.12,<1",
+]
+
+[project.scripts]
+sitebuilder = "sitebuilder.site_builder:app"
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.1,<9",
+  "pytest-cov>=5.0,<6",
+  "ruff>=0.5,<1",
+  "mypy>=1.10,<2",
+  "import-linter>=2.0,<3",
+  "pre-commit>=3.7,<4",
+  "types-PyYAML",
+  "types-Markdown",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sitebuilder"]
+
+[tool.ruff]
+src = ["src", "tests"]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "ARG"]
+
+[tool.ruff.lint.flake8-bugbear]
+# Typer's `typer.Option(...)`/`typer.Argument(...)` in defaults is the
+# documented Typer pattern (evaluated once at import time), not the mutable
+# default-argument bug B008 exists to catch.
+extend-immutable-calls = ["typer.Option", "typer.Argument"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src"]
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=sitebuilder --cov-report=term-missing --cov-fail-under=90"
+
+[tool.coverage.run]
+source = ["src/sitebuilder"]
+
+[tool.importlinter]
+root_packages = ["sitebuilder"]
+
+[[tool.importlinter.contracts]]
+name = "contracts has no dependency on other feature modules"
+type = "forbidden"
+source_modules = ["sitebuilder.contracts"]
+forbidden_modules = [
+  "sitebuilder.content_loader",
+  "sitebuilder.renderer",
+  "sitebuilder.link_checker",
+  "sitebuilder.site_builder",
+]
+
+[[tool.importlinter.contracts]]
+name = "feature modules stay independent of each other"
+type = "independence"
+modules = [
+  "sitebuilder.content_loader",
+  "sitebuilder.renderer",
+  "sitebuilder.link_checker",
+]
+
+[[tool.importlinter.contracts]]
+name = "only site_builder may assemble every feature module"
+type = "forbidden"
+source_modules = [
+  "sitebuilder.content_loader",
+  "sitebuilder.renderer",
+  "sitebuilder.link_checker",
+]
+forbidden_modules = ["sitebuilder.site_builder"]
+
+[[tool.importlinter.contracts]]
+name = "even the App Shell must use public APIs, not internal submodules"
+type = "forbidden"
+source_modules = ["sitebuilder.site_builder"]
+forbidden_modules = [
+  "sitebuilder.contracts.models",
+  "sitebuilder.content_loader.loader",
+  "sitebuilder.renderer.engine",
+  "sitebuilder.link_checker.checker",
+]
+# We only care about *direct* imports of the internal submodule (bypassing
+# the public __init__.py); reaching it indirectly through the public API is
+# the whole point and must stay allowed.
+allow_indirect_imports = true

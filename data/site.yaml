@@ -1,0 +1,8 @@
+# Global site metadata. Validated against sitebuilder.contracts.SiteConfig.
+title: "TODO: 사이트 제목"
+description: "TODO: 사이트 한 줄 소개"
+base_url: "https://hanseul-Choi.github.io"
+author_name: "TODO: 이름"
+social_links:
+  - title: GitHub
+    url: https://github.com/hanseul-Choi
