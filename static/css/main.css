@@ -178,6 +178,65 @@ main {
   margin: 1rem 0;
 }
 
+/* Collapsible problem/solution sections (renderer's collapsible_h3 filter) -- */
+
+.prose details.collapsible {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  margin: 0 0 0.75rem;
+  background: var(--color-surface);
+}
+
+.prose details.collapsible > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.prose details.collapsible > summary::-webkit-details-marker {
+  display: none;
+}
+
+.prose details.collapsible > summary::before {
+  content: "▸";
+  flex-shrink: 0;
+  color: var(--color-accent);
+  transition: transform 0.15s ease;
+}
+
+.prose details.collapsible[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.prose details.collapsible > summary:hover {
+  color: var(--color-accent);
+}
+
+.prose details.collapsible > summary:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.prose details.collapsible > :not(summary) {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.prose details.collapsible > :last-child {
+  margin-bottom: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prose details.collapsible > summary::before {
+    transition: none;
+  }
+}
+
 /* Page: simple content pages (about / contact / project detail) ------------- */
 
 .page {
