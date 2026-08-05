@@ -40,6 +40,10 @@ def check_host_allowed(host: str, allow_public: bool) -> None:
 @app.command()
 def build(
     content_dir: Path = typer.Option(REPO_ROOT / "content" / "pages", help="Markdown pages dir"),
+    project_content_dir: Path = typer.Option(
+        REPO_ROOT / "content" / "projects",
+        help="Optional per-project long-form Markdown (architecture notes, diagrams, ...)",
+    ),
     data_dir: Path = typer.Option(REPO_ROOT / "data", help="YAML data dir"),
     templates_dir: Path = typer.Option(REPO_ROOT / "templates", help="Jinja2 templates dir"),
     static_dir: Path = typer.Option(REPO_ROOT / "static", help="Static assets dir"),
@@ -53,6 +57,7 @@ def build(
     try:
         result = build_site(
             content_dir=content_dir,
+            project_content_dir=project_content_dir,
             data_dir=data_dir,
             templates_dir=templates_dir,
             static_dir=static_dir,

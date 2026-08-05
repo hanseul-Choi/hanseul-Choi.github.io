@@ -57,9 +57,16 @@ def build_site(
     static_dir: Path,
     output_dir: Path,
     project_root: Path,
+    project_content_dir: Path,
     strict: bool = True,
 ) -> BuildResult:
     """Build the full static site.
+
+    `project_content_dir` holds one optional long-form Markdown write-up per
+    project (matched by filename stem == Project.slug, e.g.
+    `content/projects/my-app.md`) — architecture notes, diagrams, etc. A
+    project without a matching file simply gets no detail page or "자세히
+    보기" link; this directory may exist and be empty.
 
     Raises BuildError if content fails validation, templates fail to render,
     or (when strict=True) the link checker finds any issue.
@@ -71,8 +78,11 @@ def build_site(
         nav = load_navigation(data_dir)
         projects = load_projects(data_dir)
         pages = load_pages(content_dir)
+        project_details = {detail.slug: detail for detail in load_pages(project_content_dir)}
     except ContentLoadError as exc:
         raise BuildError(f"Content loading failed: {exc}") from exc
+
+    detail_slugs = set(project_details)
 
     env = create_environment(templates_dir)
     resolved_output.mkdir(parents=True, exist_ok=True)
@@ -80,16 +90,54 @@ def build_site(
 
     try:
         for page in pages:
-            target = "index.html" if page.slug == "index" else f"{page.slug}/index.html"
-            html = render_page(env, "page.html", site=site_config, nav=nav, page=page)
+            is_home = page.slug == "index"
+            target = "index.html" if is_home else f"{page.slug}/index.html"
+            current_path = "/" if is_home else f"/{page.slug}/"
+            template_name = "home.html" if is_home else "page.html"
+            template_kwargs = (
+                {"featured_projects": projects[:3], "detail_slugs": detail_slugs} if is_home else {}
+            )
+
+            html = render_page(
+                env,
+                template_name,
+                site=site_config,
+                nav=nav,
+                page=page,
+                current_path=current_path,
+                **template_kwargs,
+            )
             _write(resolved_output / target, html)
             pages_written.append(target)
 
         projects_html = render_page(
-            env, "projects.html", site=site_config, nav=nav, projects=projects
+            env,
+            "projects.html",
+            site=site_config,
+            nav=nav,
+            projects=projects,
+            current_path="/projects/",
+            detail_slugs=detail_slugs,
         )
         _write(resolved_output / "projects" / "index.html", projects_html)
         pages_written.append("projects/index.html")
+
+        for project in projects:
+            detail = project_details.get(project.slug)
+            if detail is None:
+                continue
+            detail_html = render_page(
+                env,
+                "project_detail.html",
+                site=site_config,
+                nav=nav,
+                project=project,
+                detail=detail,
+                current_path="/projects/",
+            )
+            target = f"projects/{project.slug}/index.html"
+            _write(resolved_output / target, detail_html)
+            pages_written.append(target)
     except RenderError as exc:
         raise BuildError(f"Rendering failed: {exc}") from exc
 

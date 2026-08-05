@@ -7,6 +7,7 @@ input.
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +16,19 @@ import jinja2
 
 class RenderError(Exception):
     """Raised when a template cannot be found or fails to render."""
+
+
+def _initials(name: str) -> str:
+    """Reduce a display name to 1-2 characters for the hero avatar placeholder.
+
+    "Hanseul Choi" -> "HC", "최한슬" (single token) -> "최", "" -> "?".
+    """
+    parts = [part for part in name.strip().split() if part]
+    if not parts:
+        return "?"
+    if len(parts) == 1:
+        return parts[0][0].upper()
+    return (parts[0][0] + parts[-1][0]).upper()
 
 
 def create_environment(templates_dir: Path) -> jinja2.Environment:
@@ -26,13 +40,18 @@ def create_environment(templates_dir: Path) -> jinja2.Environment:
     if not templates_dir.is_dir():
         raise RenderError(f"Templates directory does not exist: {templates_dir}")
 
-    return jinja2.Environment(
+    env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(str(templates_dir)),
         autoescape=jinja2.select_autoescape(enabled_extensions=("html",), default=True),
         undefined=jinja2.StrictUndefined,
         trim_blocks=True,
         lstrip_blocks=True,
     )
+    env.filters["initials"] = _initials
+    # A callable global (not a fixed value) so long-running processes (e.g.
+    # `serve` across a year boundary) never render a stale build-time year.
+    env.globals["build_year"] = lambda: datetime.now(UTC).year
+    return env
 
 
 def render_page(env: jinja2.Environment, template_name: str, **context: Any) -> str:

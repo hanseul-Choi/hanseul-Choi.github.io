@@ -38,6 +38,26 @@ class TestProject:
         assert project.order == 0
         assert project.repo_url is None
         assert project.live_url is None
+        assert project.image_url is None
+        assert project.achievements == []
+
+    def test_image_url_is_optional_and_settable(self) -> None:
+        project = Project(
+            slug="my-project",
+            title="My Project",
+            summary="A thing I built.",
+            image_url="/static/images/my-project.png",
+        )
+        assert project.image_url == "/static/images/my-project.png"
+
+    def test_achievements_is_optional_and_settable(self) -> None:
+        project = Project(
+            slug="my-project",
+            title="My Project",
+            summary="A thing I built.",
+            achievements=["응답속도 200ms → 80ms 단축", "DAU 30% 증가"],
+        )
+        assert project.achievements == ["응답속도 200ms → 80ms 단축", "DAU 30% 증가"]
 
     @pytest.mark.parametrize(
         "bad_slug",

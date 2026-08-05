@@ -1,13 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Projects</h1>
-{% if projects %}
-<div class="project-grid">
-  {% for project in projects %}
-    {% include "components/project_card.html" %}
-  {% endfor %}
+<div class="wrap section">
+  <div class="section-header">
+    <h1>Projects</h1>
+    <p>만든 것들을 모아둡니다.</p>
+  </div>
+  {% if projects %}
+  <div class="project-grid">
+    {% for project in projects %}
+      {% include "components/project_card.html" %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <p>아직 등록된 프로젝트가 없습니다. 곧 채워질 예정이에요.</p>
+  </div>
+  {% endif %}
 </div>
-{% else %}
-<p class="empty">아직 등록된 프로젝트가 없습니다.</p>
-{% endif %}
 {% endblock %}
