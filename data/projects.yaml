@@ -21,11 +21,12 @@
   order: 2
 
 - slug: airport-rail-crowd-monitoring
-  title: "공항철도 실시간 혼잡도 분석·관제 PoC"
-  summary: "RTSP CCTV 기반 실시간 혼잡도 분석 웹 시스템을 설계·개발해 수작업 보고를 자동화했습니다."
-  tags: ["FastAPI", "OpenCV", "WebRTC", "PostgreSQL", "Docker"]
+  title: "공항철도 실시간 혼잡도 분석·관제 시스템"
+  summary: "계양역 폐쇄망 환경에서 CCTV 48채널을 실시간 분석해 혼잡도를 계산하고, 관제 담당자의 수작업 보고를 자동화하는 9인 프로젝트의 백엔드·인프라를 담당했습니다."
+  tags: ["FastAPI", "OpenCV", "WebRTC", "Nginx", "PostgreSQL", "Docker", "YOLO"]
   achievements:
-    - "48개 CCTV 영상을 WebRTC로 제공, 주요 12개 채널 혼잡도 분석·통계 적용"
-    - "OpenCV 버퍼 구조 개선으로 12채널 처리 지연 0.5초 → 0.1초 (약 80% 개선)"
-    - "테이블 분리·인덱스로 1년치 조회 시간 10초 → 5초로 단축"
+    - "RTSP 프레임 수신~WebRTC 전달 지연 0.5초 → 0.1초로 약 80% 단축"
+    - "원본/통계 테이블 분리+인덱싱으로 1년치 통계 조회 10초 → 5초로 단축"
+    - "GPU 2장에 Backend 분리, 짝수·홀수 채널 기준 Nginx 라우팅으로 부하 분산"
+    - "인터넷이 차단된 폐쇄망 현장에 Docker 이미지를 USB로 반입해 배포"
   order: 3
