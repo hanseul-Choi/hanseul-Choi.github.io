@@ -75,6 +75,39 @@ def _collapsible_h3(html: str) -> Markup:
     return Markup(str(soup))
 
 
+def _lightbox_images(html: str) -> Markup:
+    """Make every `<img>` in html open full-size on click.
+
+    Pure CSS, no JavaScript: each image becomes a same-page anchor
+    (`#lightbox-N`) to a fixed, full-screen overlay shown via the `:target`
+    selector; the overlay is itself a link back to `#`, so clicking anywhere
+    on the darkened backdrop (or the image) closes it. IDs are numbered in
+    document order, scoped to a single render call, so they stay unique
+    within one page even with multiple diagrams.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    for index, img in enumerate(soup.find_all("img"), start=1):
+        lightbox_id = f"lightbox-{index}"
+        alt_value = img.get("alt")
+        alt_text = alt_value if isinstance(alt_value, str) else ""
+        src_value = img.get("src")
+        src = src_value if isinstance(src_value, str) else ""
+
+        trigger = soup.new_tag("a", href=f"#{lightbox_id}")
+        trigger["class"] = "lightbox-trigger"
+        img.replace_with(trigger)
+        trigger.append(img)
+
+        overlay = soup.new_tag("a", href="#")
+        overlay["id"] = lightbox_id
+        overlay["class"] = "lightbox-overlay"
+        overlay["aria-label"] = "이미지 닫기"
+        overlay.append(soup.new_tag("img", src=src, alt=alt_text))
+        trigger.insert_after(overlay)
+
+    return Markup(str(soup))
+
+
 def create_environment(templates_dir: Path) -> jinja2.Environment:
     """Build a Jinja2 environment rooted at `templates_dir`.
 
@@ -93,6 +126,7 @@ def create_environment(templates_dir: Path) -> jinja2.Environment:
     )
     env.filters["initials"] = _initials
     env.filters["collapsible_h3"] = _collapsible_h3
+    env.filters["lightbox_images"] = _lightbox_images
     # A callable global (not a fixed value) so long-running processes (e.g.
     # `serve` across a year boundary) never render a stale build-time year.
     env.globals["build_year"] = lambda: datetime.now(UTC).year
