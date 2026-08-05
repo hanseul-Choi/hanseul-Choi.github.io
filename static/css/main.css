@@ -178,6 +178,63 @@ main {
   margin: 1rem 0;
 }
 
+/* Click-to-enlarge lightbox (renderer's lightbox_images filter) ------------- */
+
+.prose a.lightbox-trigger {
+  display: inline-block;
+  line-height: 0;
+  cursor: zoom-in;
+}
+
+.prose a.lightbox-trigger img {
+  transition: opacity 0.15s ease;
+}
+
+.prose a.lightbox-trigger:hover img {
+  opacity: 0.85;
+}
+
+.lightbox-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  background: rgba(10, 10, 12, 0.92);
+  cursor: zoom-out;
+}
+
+.lightbox-overlay:target {
+  display: flex;
+}
+
+.lightbox-overlay img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  margin: 0;
+}
+
+.lightbox-overlay::after {
+  content: "✕ 닫기";
+  position: fixed;
+  top: 1.25rem;
+  right: 1.5rem;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prose a.lightbox-trigger img {
+    transition: none;
+  }
+}
+
 /* Collapsible problem/solution sections (renderer's collapsible_h3 filter) -- */
 
 .prose details.collapsible {

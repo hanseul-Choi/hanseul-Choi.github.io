@@ -23,6 +23,7 @@ def templates_dir(tmp_path: Path) -> Path:
     (tmp_path / "year.html").write_text("{{ build_year() }}", encoding="utf-8")
     (tmp_path / "broken_include.html").write_text('{% include "missing.html" %}', encoding="utf-8")
     (tmp_path / "collapsible.html").write_text("{{ body | collapsible_h3 }}", encoding="utf-8")
+    (tmp_path / "lightbox.html").write_text("{{ body | lightbox_images }}", encoding="utf-8")
     return tmp_path
 
 
@@ -149,3 +150,52 @@ class TestCollapsibleH3Filter:
         details = soup.find("details", class_="collapsible")
         assert details.find("li").get_text(strip=True) == "항목"
         assert details.find("code").get_text(strip=True) == "code here"
+
+
+class TestLightboxImagesFilter:
+    def test_wraps_image_in_trigger_and_overlay(self, templates_dir: Path) -> None:
+        env = create_environment(templates_dir)
+        html = '<img src="/static/x.png" alt="다이어그램">'
+        output = render_page(env, "lightbox.html", body=html)
+        soup = BeautifulSoup(output, "html.parser")
+
+        trigger = soup.find("a", class_="lightbox-trigger")
+        assert trigger is not None
+        assert trigger.img["src"] == "/static/x.png"
+        assert trigger.img["alt"] == "다이어그램"
+
+        overlay_id = trigger["href"].lstrip("#")
+        overlay = soup.find("a", id=overlay_id)
+        assert "lightbox-overlay" in overlay["class"]
+        assert overlay["href"] == "#"
+        assert overlay.img["src"] == "/static/x.png"
+        assert overlay.img["alt"] == "다이어그램"
+
+    def test_multiple_images_get_distinct_ids(self, templates_dir: Path) -> None:
+        env = create_environment(templates_dir)
+        html = '<img src="/a.png" alt="A"><p>text</p><img src="/b.png" alt="B">'
+        output = render_page(env, "lightbox.html", body=html)
+        soup = BeautifulSoup(output, "html.parser")
+
+        triggers = soup.find_all("a", class_="lightbox-trigger")
+        hrefs = [t["href"] for t in triggers]
+        assert len(hrefs) == len(set(hrefs)) == 2
+
+        for trigger in triggers:
+            overlay = soup.find("a", id=trigger["href"].lstrip("#"))
+            assert overlay.img["src"] == trigger.img["src"]
+
+    def test_image_without_alt_does_not_crash(self, templates_dir: Path) -> None:
+        env = create_environment(templates_dir)
+        output = render_page(env, "lightbox.html", body='<img src="/x.png">')
+        soup = BeautifulSoup(output, "html.parser")
+
+        assert soup.find("a", class_="lightbox-trigger").img["src"] == "/x.png"
+
+    def test_html_without_images_is_left_unchanged(self, templates_dir: Path) -> None:
+        env = create_environment(templates_dir)
+        output = render_page(env, "lightbox.html", body="<p>그냥 텍스트</p>")
+        soup = BeautifulSoup(output, "html.parser")
+
+        assert soup.find("a", class_="lightbox-trigger") is None
+        assert "그냥 텍스트" in output
