@@ -21,13 +21,23 @@ class RenderError(Exception):
 def _initials(name: str) -> str:
     """Reduce a display name to 1-2 characters for the hero avatar placeholder.
 
-    "Hanseul Choi" -> "HC", "최한슬" (single token) -> "최", "" -> "?".
+    "Hanseul Choi" -> "HC" (first + last token initial).
+
+    A single token is ambiguous: for a space-separated Latin name typed as
+    one word it means "just an initial" ("cher" -> "C"), but for a Korean
+    full name written surname+given-name with no space, the surname alone
+    ("최") reads as a stranger's business card, not a personal avatar — the
+    given name is what's recognizable. So a single non-ASCII token uses its
+    last 1-2 characters instead: "최한슬" -> "한슬".
     """
     parts = [part for part in name.strip().split() if part]
     if not parts:
         return "?"
     if len(parts) == 1:
-        return parts[0][0].upper()
+        token = parts[0]
+        if not token.isascii() and len(token) >= 2:
+            return token[-2:]
+        return token[0].upper()
     return (parts[0][0] + parts[-1][0]).upper()
 
 
