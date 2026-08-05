@@ -12,11 +12,12 @@
 
 - slug: realtime-voice-translation
   title: "외국인 근로자 실시간 음성 번역 서비스"
-  summary: "건설 현장의 외국인 근로자에게 안전조례를 약 20개 언어로 실시간 전달하는 서비스의 AWS 인프라를 Terraform으로 설계·구축했습니다."
+  summary: "D 건설사 건설 현장의 외국인 근로자에게 안전조례·작업지시를 약 20개 언어로 실시간 전달하는 서비스의 AWS 인프라를 5인 팀에서 인프라 담당으로 처음부터 설계·구축했습니다."
   tags: ["AWS", "Terraform", "EKS", "Kubernetes", "Redis", "Argo CD", "Prometheus"]
   achievements:
-    - "Artillery로 40개 방×200명, 총 8,000명 동시 웹소켓 부하 테스트"
-    - "HPA scale-out 시 Pod 상태 불일치 문제를 Redis 공유 상태로 해결"
+    - "Artillery로 40개 방×200명, 총 8,000명 동시 WebSocket·실제 번역 부하 테스트 통과"
+    - "고객 요구사항 3초 이내 전달 기준 충족, 테스트 환경에서 대부분 약 1초 이내 확인"
+    - "HPA scale-out 시 발생한 WebSocket 상태 불일치를 Redis 공유 상태 환경으로 해결"
     - "시범 운영 후 약 5개 건설 현장, 약 2,000명이 사용하는 서비스로 전환"
   order: 2
 
