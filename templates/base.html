@@ -9,8 +9,8 @@
   <script>
     // Apply a saved manual theme choice before first paint, so there's no
     // flash of the wrong theme. Runs synchronously (no defer) on purpose.
-    // No saved choice -> leave data-theme unset -> CSS falls back to
-    // prefers-color-scheme, same as before this feature existed.
+    // No saved choice -> leave data-theme unset -> CSS default applies
+    // (dark — see static/css/main.css), regardless of OS preference.
     (function () {
       try {
         var saved = localStorage.getItem("theme");
@@ -18,7 +18,7 @@
           document.documentElement.setAttribute("data-theme", saved);
         }
       } catch (e) {
-        /* localStorage unavailable (private mode, disabled) — fall back to system preference */
+        /* localStorage unavailable (private mode, disabled) — falls back to the dark default */
       }
     })();
   </script>

@@ -1,20 +1,28 @@
 /* Design tokens ---------------------------------------------------------- */
 
+/* Default is dark — not "follow the OS": :root carries the dark values
+   directly, so a first-time visitor sees dark regardless of their system
+   setting. `:root[data-theme="light"]` (below, set by
+   static/js/theme-toggle.js) is the only way to get light mode.
+   `:root[data-theme="dark"]` duplicates the default so an explicit "dark"
+   choice (saved after a visitor had switched to light) renders identically
+   to a first visit, rather than depending on cascade order. */
+
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
 
-  --color-bg: #fafaf9;
-  --color-surface: #ffffff;
-  --color-text: #18181b;
-  --color-text-muted: #6b7280;
-  --color-border: #e4e4e7;
-  --color-accent: #4338ca;
-  --color-accent-soft: #eef2ff;
-  --color-accent-contrast: #ffffff;
-  --color-accent-gradient: linear-gradient(135deg, #4338ca, #0ea5e9);
+  --color-bg: #0c0c0d;
+  --color-surface: #18181b;
+  --color-text: #f4f4f5;
+  --color-text-muted: #a1a1aa;
+  --color-border: #2a2a2e;
+  --color-accent: #818cf8;
+  --color-accent-soft: #1e1b3a;
+  --color-accent-contrast: #0c0c0d;
+  --color-accent-gradient: linear-gradient(135deg, #818cf8, #22d3ee);
 
-  --shadow-sm: 0 1px 2px rgba(24, 24, 27, 0.06);
-  --shadow-md: 0 8px 24px rgba(24, 24, 27, 0.08);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
 
   --radius-sm: 0.5rem;
   --radius-md: 0.875rem;
@@ -26,29 +34,9 @@
   --max-width: 52rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #0c0c0d;
-    --color-surface: #18181b;
-    --color-text: #f4f4f5;
-    --color-text-muted: #a1a1aa;
-    --color-border: #2a2a2e;
-    --color-accent: #818cf8;
-    --color-accent-soft: #1e1b3a;
-    --color-accent-contrast: #0c0c0d;
-    --color-accent-gradient: linear-gradient(135deg, #818cf8, #22d3ee);
-
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
-  }
-}
-
-/* Manual theme toggle (static/js/theme-toggle.js sets data-theme on <html>).
-   Attribute selectors below outrank the plain `:root` in the media query
-   above, so a manual choice always wins over the OS preference; omitting
-   data-theme (JS disabled, or "system" chosen) falls back to it untouched. */
-
 :root[data-theme="dark"] {
+  color-scheme: dark;
+
   --color-bg: #0c0c0d;
   --color-surface: #18181b;
   --color-text: #f4f4f5;
@@ -64,6 +52,8 @@
 }
 
 :root[data-theme="light"] {
+  color-scheme: light;
+
   --color-bg: #fafaf9;
   --color-surface: #ffffff;
   --color-text: #18181b;
@@ -172,28 +162,13 @@ img {
   height: 1.05rem;
 }
 
-/* Which icon shows reflects the mode a click would switch *to* — moon
-   ("go dark") by default/light, sun ("go light") once dark is active,
-   whether dark comes from an explicit choice or the OS preference. */
-.theme-toggle .icon-sun {
+/* Which icon shows reflects the mode a click would switch *to*. Default is
+   dark (see the token block above), so the sun ("go light") shows by
+   default; the moon ("go dark") only shows once light is explicitly
+   chosen. No OS-preference branch needed anymore — dark is the baseline
+   regardless of system setting. */
+.theme-toggle .icon-moon {
   display: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .theme-toggle .icon-moon {
-    display: none;
-  }
-  :root:not([data-theme]) .theme-toggle .icon-sun {
-    display: block;
-  }
-}
-
-:root[data-theme="dark"] .theme-toggle .icon-moon {
-  display: none;
-}
-
-:root[data-theme="dark"] .theme-toggle .icon-sun {
-  display: block;
 }
 
 :root[data-theme="light"] .theme-toggle .icon-moon {

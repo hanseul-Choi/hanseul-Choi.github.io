@@ -39,5 +39,12 @@
   제시했고 사용자가 토글 버튼을 선택 — 페이지 이동 간 선택이 유지되려면 JS 없이는 불가능하다는 점을
   안내하고 진행.
 - **위험/후속 작업**: 이 저장소의 다른 모든 인터랙션(nav, collapsible_h3, lightbox, 프로젝트 모달)은
-  여전히 순수 CSS. `link_checker`는 아직 `<script src>`를 검사하지 않음 — JS 파일 경로가 깨져도
-  현재 빌드 검증에서 못 잡음 (범위 밖으로 명시적으로 남겨둠, 후속 작업 후보).
+  여전히 순수 CSS. 부수적으로 `link_checker`가 `<script src>`/`<link href>`를 전혀 검사하지 않던
+  걸 발견해서 같은 PR에서 함께 고침 (`src/sitebuilder/link_checker/docs/HISTORY.md` 참고).
+
+## 2026-08-06 — 기본 테마를 다크로 전환
+- **무엇**: `:root` 기본 토큰 자체를 다크 값으로 바꾸고 `@media (prefers-color-scheme: dark)`
+  블록을 제거. 이제 방문자의 시스템 설정과 무관하게 첫 방문은 항상 다크로 보이고, 토글로
+  라이트를 명시적으로 선택했을 때만 밝게 바뀜. 토글 아이콘 로직과 `theme-toggle.js`의
+  `currentTheme()`(시스템 선호도 분기 제거, "light가 아니면 dark"로 단순화)도 맞춰서 정리.
+- **왜**: "default는 다크모드로 해줘" 요청.
