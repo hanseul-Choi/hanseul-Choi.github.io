@@ -13,3 +13,12 @@
   프로젝트 이미지가 데이터 URI일 수 있다는 걸 처음 설계에서 놓쳤음.
 - **수정**: 허용목록 대신 "스킴이 하나라도 있으면 무조건 외부/스킵"으로 일반화. 회귀 테스트
   `test_data_uri_image_is_skipped_not_crashed_on` 추가.
+
+## 2026-08-06 — `<script src>`/`<link href>` 검사 추가
+- **발견 경위**: 다크모드 토글 기능으로 사이트 최초의 외부 JS 파일(`static/js/theme-toggle.js`)을
+  추가하면서, `check_internal_links`가 `<a>`/`<img>`만 보고 `<script src>`나 `<link href>`
+  (스타일시트)는 전혀 검사하지 않는다는 걸 알아챔 — 예를 들어 `main.css` 경로가 깨져도 빌드는
+  "링크 이슈 0건"으로 조용히 통과했을 것.
+- **수정**: `<script src>`(inline 스크립트는 `src` 속성이 없어 자동 제외)와 `<link href>`를
+  같은 `_check_internal_target`로 검사하도록 확장. 회귀 테스트 4개 추가(깨진/정상 script src,
+  inline script 무시, 깨진/정상 link href).

@@ -97,3 +97,29 @@ class TestCheckInternalLinks:
         issues = check_internal_links(tmp_path)
         assert len(issues) == 1
         assert issues[0].kind == "broken_link"
+
+    def test_broken_script_src_is_flagged(self, tmp_path: Path) -> None:
+        _write(tmp_path / "index.html", '<script src="/static/js/missing.js"></script>')
+        issues = check_internal_links(tmp_path)
+        assert len(issues) == 1
+        assert issues[0].kind == "broken_link"
+
+    def test_valid_script_src_produces_no_issue(self, tmp_path: Path) -> None:
+        _write(tmp_path / "index.html", '<script src="/static/js/app.js"></script>')
+        _write(tmp_path / "static" / "js" / "app.js", "console.log(1);")
+        assert check_internal_links(tmp_path) == []
+
+    def test_inline_script_without_src_is_ignored(self, tmp_path: Path) -> None:
+        _write(tmp_path / "index.html", "<script>console.log(1);</script>")
+        assert check_internal_links(tmp_path) == []
+
+    def test_broken_stylesheet_link_is_flagged(self, tmp_path: Path) -> None:
+        _write(tmp_path / "index.html", '<link rel="stylesheet" href="/static/css/missing.css">')
+        issues = check_internal_links(tmp_path)
+        assert len(issues) == 1
+        assert issues[0].kind == "broken_link"
+
+    def test_valid_stylesheet_link_produces_no_issue(self, tmp_path: Path) -> None:
+        _write(tmp_path / "index.html", '<link rel="stylesheet" href="/static/css/main.css">')
+        _write(tmp_path / "static" / "css" / "main.css", "body { margin: 0; }")
+        assert check_internal_links(tmp_path) == []
