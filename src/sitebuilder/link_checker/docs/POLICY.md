@@ -1,9 +1,9 @@
 # POLICY — link_checker
 
 ## 역할
-빌드된 출력 디렉터리(HTML 파일들)를 스캔해서 내부 링크가 실제 존재하는 파일을 가리키는지,
-이미지에 `alt` 속성이 있는지 검사한다. 외부(http/https) 링크 검사는 기본적으로 끄고, 켤 경우
-allowlist된 도메인만 요청한다.
+빌드된 출력 디렉터리(HTML 파일들)를 스캔해서 `<a href>`, `<img src>`, `<script src>`,
+`<link href>`(스타일시트 등)가 실제 존재하는 파일을 가리키는지, 이미지에 `alt` 속성이 있는지
+검사한다. 외부(http/https) 링크 검사는 기본적으로 끄고, 켤 경우 allowlist된 도메인만 요청한다.
 
 ## 규칙
 - `contracts`만 import한다. `content_loader`, `renderer`, `site_builder`를 import하지 않는다.

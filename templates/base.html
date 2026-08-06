@@ -6,13 +6,35 @@
   <title>{{ site.title }}{% if page is defined and page.slug != "index" %} · {{ page.title }}{% endif %}</title>
   <meta name="description" content="{{ site.description }}">
   <link rel="stylesheet" href="/static/css/main.css">
+  <script>
+    // Apply a saved manual theme choice before first paint, so there's no
+    // flash of the wrong theme. Runs synchronously (no defer) on purpose.
+    // No saved choice -> leave data-theme unset -> CSS falls back to
+    // prefers-color-scheme, same as before this feature existed.
+    (function () {
+      try {
+        var saved = localStorage.getItem("theme");
+        if (saved === "dark" || saved === "light") {
+          document.documentElement.setAttribute("data-theme", saved);
+        }
+      } catch (e) {
+        /* localStorage unavailable (private mode, disabled) — fall back to system preference */
+      }
+    })();
+  </script>
+  <script src="/static/js/theme-toggle.js" defer></script>
 </head>
 <body>
   {% import "components/icons.html" as icons %}
   <header class="site-header">
     <div class="wrap">
       <a class="brand" href="/">{{ site.title }}</a>
-      {% include "components/nav.html" %}
+      <div class="header-right">
+        {% include "components/nav.html" %}
+        <button type="button" class="theme-toggle" data-theme-toggle aria-label="다크모드 전환">
+          {{ icons.moon() }}{{ icons.sun() }}
+        </button>
+      </div>
     </div>
   </header>
   <main>

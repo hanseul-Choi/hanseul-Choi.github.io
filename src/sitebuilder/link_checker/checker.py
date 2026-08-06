@@ -105,7 +105,12 @@ def _check_internal_target(
 
 
 def check_internal_links(output_dir: Path) -> list[LinkIssue]:
-    """Scan every `*.html` file under `output_dir` for broken links and missing alt text."""
+    """Scan every `*.html` file under `output_dir` for broken asset references and missing alt text.
+
+    Checks `<a href>`, `<img src>`, `<script src>`, and `<link href>`
+    (stylesheets, favicons, ...) — anywhere a page references another local
+    file by path.
+    """
     if not output_dir.is_dir():
         raise LinkCheckError(f"Output directory does not exist: {output_dir}")
 
@@ -125,5 +130,13 @@ def check_internal_links(output_dir: Path) -> list[LinkIssue]:
                 issues.append(
                     LinkIssue(html_file, "missing_alt", f"img src={src!r} has no alt text")
                 )
+
+        for script in soup.find_all("script", src=True):
+            src = _attr_str(script.get("src"))
+            issues.extend(_check_internal_target(html_file, output_dir, src, attr="src"))
+
+        for link_tag in soup.find_all("link", href=True):
+            href = _attr_str(link_tag.get("href"))
+            issues.extend(_check_internal_target(html_file, output_dir, href, attr="href"))
 
     return issues

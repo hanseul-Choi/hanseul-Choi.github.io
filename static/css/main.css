@@ -43,6 +43,41 @@
   }
 }
 
+/* Manual theme toggle (static/js/theme-toggle.js sets data-theme on <html>).
+   Attribute selectors below outrank the plain `:root` in the media query
+   above, so a manual choice always wins over the OS preference; omitting
+   data-theme (JS disabled, or "system" chosen) falls back to it untouched. */
+
+:root[data-theme="dark"] {
+  --color-bg: #0c0c0d;
+  --color-surface: #18181b;
+  --color-text: #f4f4f5;
+  --color-text-muted: #a1a1aa;
+  --color-border: #2a2a2e;
+  --color-accent: #818cf8;
+  --color-accent-soft: #1e1b3a;
+  --color-accent-contrast: #0c0c0d;
+  --color-accent-gradient: linear-gradient(135deg, #818cf8, #22d3ee);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+:root[data-theme="light"] {
+  --color-bg: #fafaf9;
+  --color-surface: #ffffff;
+  --color-text: #18181b;
+  --color-text-muted: #6b7280;
+  --color-border: #e4e4e7;
+  --color-accent: #4338ca;
+  --color-accent-soft: #eef2ff;
+  --color-accent-contrast: #ffffff;
+  --color-accent-gradient: linear-gradient(135deg, #4338ca, #0ea5e9);
+
+  --shadow-sm: 0 1px 2px rgba(24, 24, 27, 0.06);
+  --shadow-md: 0 8px 24px rgba(24, 24, 27, 0.08);
+}
+
 /* Base -------------------------------------------------------------------- */
 
 * {
@@ -100,6 +135,73 @@ img {
   font-size: 1.05rem;
   text-decoration: none;
   letter-spacing: -0.01em;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  color: var(--color-text);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.theme-toggle svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+/* Which icon shows reflects the mode a click would switch *to* — moon
+   ("go dark") by default/light, sun ("go light") once dark is active,
+   whether dark comes from an explicit choice or the OS preference. */
+.theme-toggle .icon-sun {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .theme-toggle .icon-moon {
+    display: none;
+  }
+  :root:not([data-theme]) .theme-toggle .icon-sun {
+    display: block;
+  }
+}
+
+:root[data-theme="dark"] .theme-toggle .icon-moon {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-toggle .icon-sun {
+  display: block;
+}
+
+:root[data-theme="light"] .theme-toggle .icon-moon {
+  display: block;
+}
+
+:root[data-theme="light"] .theme-toggle .icon-sun {
+  display: none;
 }
 
 .site-nav ul {
