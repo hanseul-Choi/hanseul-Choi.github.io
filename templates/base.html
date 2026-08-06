@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ site.title }}{% if page is defined and page.slug != "index" %} · {{ page.title }}{% endif %}</title>
   <meta name="description" content="{{ site.description }}">
-  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="/static/css/main.css?v={{ asset_version }}">
   <script>
     // Apply a saved manual theme choice before first paint, so there's no
     // flash of the wrong theme. Runs synchronously (no defer) on purpose.
@@ -22,7 +22,7 @@
       }
     })();
   </script>
-  <script src="/static/js/theme-toggle.js" defer></script>
+  <script src="/static/js/theme-toggle.js?v={{ asset_version }}" defer></script>
 </head>
 <body>
   {% import "components/icons.html" as icons %}

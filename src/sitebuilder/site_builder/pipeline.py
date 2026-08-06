@@ -7,6 +7,7 @@ and docs/THREAT_MODEL.md in this directory for the output-path guard rules.
 
 from __future__ import annotations
 
+import hashlib
 import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -35,6 +36,26 @@ class BuildResult:
     @property
     def ok(self) -> bool:
         return not self.link_issues
+
+
+def _compute_asset_version(static_dir: Path) -> str:
+    """A short, deterministic hash of every file under `static_dir`.
+
+    Used as a `?v=...` cache-busting query string on the CSS/JS tags in
+    base.html — not a security boundary, purely so a deploy is never masked
+    by a visitor's or the CDN's cached copy of an old stylesheet/script (see
+    docs/HISTORY.md for the incident that prompted this). Changes whenever
+    any static asset's bytes change; returns a stable placeholder if
+    `static_dir` doesn't exist so callers never need a special case.
+    """
+    if not static_dir.is_dir():
+        return "no-static"
+
+    digest = hashlib.sha256()
+    for path in sorted(static_dir.rglob("*")):
+        if path.is_file():
+            digest.update(path.read_bytes())
+    return digest.hexdigest()[:10]
 
 
 def _ensure_output_dir_allowed(output_dir: Path, project_root: Path) -> Path:
@@ -83,6 +104,7 @@ def build_site(
         raise BuildError(f"Content loading failed: {exc}") from exc
 
     detail_slugs = set(project_details)
+    asset_version = _compute_asset_version(static_dir)
 
     env = create_environment(templates_dir)
     resolved_output.mkdir(parents=True, exist_ok=True)
@@ -111,6 +133,7 @@ def build_site(
                 nav=nav,
                 page=page,
                 current_path=current_path,
+                asset_version=asset_version,
                 **template_kwargs,
             )
             _write(resolved_output / target, html)
@@ -125,6 +148,7 @@ def build_site(
             current_path="/projects/",
             detail_slugs=detail_slugs,
             project_details=project_details,
+            asset_version=asset_version,
         )
         _write(resolved_output / "projects" / "index.html", projects_html)
         pages_written.append("projects/index.html")
@@ -141,6 +165,7 @@ def build_site(
                 project=project,
                 detail=detail,
                 current_path="/projects/",
+                asset_version=asset_version,
             )
             target = f"projects/{project.slug}/index.html"
             _write(resolved_output / target, detail_html)

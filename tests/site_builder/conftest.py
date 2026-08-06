@@ -33,7 +33,12 @@ _PROJECTS_YAML = (
 )
 
 _BASE_TEMPLATE = (
-    "<!doctype html><html><head><title>{{ site.title }}</title></head>"
+    "<!doctype html><html><head><title>{{ site.title }}</title>"
+    # References asset_version like the real base.html, so StrictUndefined
+    # catches any pipeline.py render_page() call site that forgets to pass
+    # it (every template extends base.html, so it's a required kwarg
+    # everywhere, not just where it's visibly used).
+    '<link rel="stylesheet" href="/static/style.css?v={{ asset_version }}"></head>'
     "<body>{% include 'components/nav.html' %}"
     "{% block content %}{% endblock %}</body></html>"
 )
