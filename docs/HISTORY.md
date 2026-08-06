@@ -48,3 +48,21 @@
   라이트를 명시적으로 선택했을 때만 밝게 바뀜. 토글 아이콘 로직과 `theme-toggle.js`의
   `currentTheme()`(시스템 선호도 분기 제거, "light가 아니면 dark"로 단순화)도 맞춰서 정리.
 - **왜**: "default는 다크모드로 해줘" 요청.
+
+## 2026-08-06 — 장애: GitHub Pages가 legacy Jekyll 자동 빌드와 경합
+- **증상**: "내용이 다 사라지고 디자인도 이상하다"는 사용자 신고. 라이브 사이트가 우리 빌더가 만든
+  페이지가 아니라 README.md를 GitHub 기본 Jekyll 테마로 렌더링한 페이지("Hanlien")로 나오고 있었음.
+- **원인**: 저장소의 GitHub Pages 설정이 `build_type: legacy`(브랜치에서 자동 Jekyll 빌드)로 남아
+  있었음 — PR #1에서 `remote_theme`/Jekyll을 걷어내고 GitHub Actions(`actions/deploy-pages`)
+  배포로 전환했을 때, 저장소 Settings의 Pages Source를 "GitHub Actions"로 바꾸는 걸 놓침.
+  그 결과 push마다 우리 워크플로(`verify-and-deploy`)와 GitHub의 자동 Jekyll 빌드
+  (`pages-build-deployment`)가 **동시에** 같은 Pages에 배포를 시도했고, 매번 나중에 끝나는 쪽이
+  이겼다 — 그동안은 운 좋게 우리 배포가 나중에 끝나서 정상으로 보였을 뿐, 처음부터 경쟁 상태였음.
+- **수정**: `gh api -X PUT repos/.../pages -f build_type=workflow`로 Pages Source를 GitHub
+  Actions 전용으로 전환해 legacy 자동 빌드 자체를 껐다. 이후 이 커밋을 `master`에 바로 push해
+  실제 배포를 다시 트리거함 (참고: `deploy` job은 `github.event_name == 'push'` 조건이라
+  `workflow_dispatch`로는 안 돎 — 그래서 커밋 push가 필요했음).
+- **위험/후속 작업**: 이 경합 상태는 처음부터 있었고 우연히 지금까지 안 드러났을 뿐임 — 앞으로
+  push 직후엔 라이브를 다시 확인하는 습관이 필요. `verify-and-deploy` 워크플로의 `deploy` job
+  조건을 `workflow_dispatch`에서도 동작하도록 완화하면 이런 상황에서 수동 재배포가 더 쉬워짐
+  (지금은 이 문서 커밋처럼 실제 push가 있어야만 함) — 후속 개선 후보.
