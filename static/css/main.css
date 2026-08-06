@@ -95,7 +95,7 @@ img {
 .wrap {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 1.25rem;
+  padding: 0 1.5rem;
 }
 
 /* Header / nav -------------------------------------------------------------- */
@@ -749,14 +749,61 @@ body:has(.modal-overlay:target) {
 
 /* Responsive ------------------------------------------------------------ */
 
+@media (max-width: 40rem) {
+  /* Internal paddings shrink on phones so content gets more usable width,
+     while .wrap's own side padding (the visible page margin) stays put —
+     that's the outer breathing room that should never disappear. */
+
+  .hero {
+    padding: 3rem 0 2.5rem;
+  }
+
+  .hero-avatar {
+    width: 4.5rem;
+    height: 4.5rem;
+    font-size: 1.3rem;
+  }
+
+  .page {
+    padding: 2rem 0 3rem;
+  }
+
+  .section {
+    padding: 0.5rem 0 3rem;
+  }
+
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-overlay {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .modal-box {
+    padding: 1.25rem;
+  }
+
+  .modal-close {
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+
+  /* Comfortable touch targets (~44px, per platform guidelines). */
+  .theme-toggle {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .btn-icon {
+    padding: 0.55rem 0.85rem;
+  }
+}
+
 @media (max-width: 30rem) {
   .site-header .wrap {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.6rem;
-  }
-
-  .hero {
-    padding: 3rem 0 2.5rem;
   }
 }
