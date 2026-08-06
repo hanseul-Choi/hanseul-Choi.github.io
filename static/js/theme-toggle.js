@@ -12,18 +12,10 @@
     return;
   }
 
-  function systemPrefersDark() {
-    return (
-      window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
-    );
-  }
-
+  // Default is dark (see static/css/main.css) regardless of OS preference,
+  // so anything other than an explicit "light" counts as dark.
   function currentTheme() {
-    var explicit = root.getAttribute("data-theme");
-    if (explicit === "dark" || explicit === "light") {
-      return explicit;
-    }
-    return systemPrefersDark() ? "dark" : "light";
+    return root.getAttribute("data-theme") === "light" ? "light" : "dark";
   }
 
   toggle.addEventListener("click", function () {
