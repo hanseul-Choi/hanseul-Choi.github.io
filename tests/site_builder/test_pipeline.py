@@ -6,6 +6,7 @@ src/sitebuilder/site_builder/docs/THREAT_MODEL.md.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -54,6 +55,37 @@ class TestBuildSiteHappyPath:
         (site_paths.data_dir / "projects.yaml").write_text("[]\n", encoding="utf-8")
         result = _build(site_paths)
         assert result.ok
+
+
+class TestAssetCacheBusting:
+    """Every static asset link carries a `?v=<hash>` so a deploy is never
+    masked by a stale browser/CDN cache of the old CSS/JS (see
+    docs/HISTORY.md — this is exactly what bit us in production)."""
+
+    def test_same_version_query_string_appears_on_every_page(self, site_paths: SitePaths) -> None:
+        result = _build(site_paths)
+        home_html = (result.output_dir / "index.html").read_text(encoding="utf-8")
+        projects_html = (result.output_dir / "projects" / "index.html").read_text(encoding="utf-8")
+
+        home_version = re.search(r"style\.css\?v=([a-f0-9]+)", home_html)
+        projects_version = re.search(r"style\.css\?v=([a-f0-9]+)", projects_html)
+        assert home_version is not None
+        assert projects_version is not None
+        assert home_version.group(1) == projects_version.group(1)
+
+    def test_version_changes_when_static_content_changes(self, site_paths: SitePaths) -> None:
+        first = _build(site_paths)
+        first_html = (first.output_dir / "index.html").read_text(encoding="utf-8")
+        first_match = re.search(r"style\.css\?v=([a-f0-9]+)", first_html)
+        assert first_match is not None
+
+        (site_paths.static_dir / "style.css").write_text("body { margin: 1px; }", encoding="utf-8")
+        second = _build(site_paths)
+        second_html = (second.output_dir / "index.html").read_text(encoding="utf-8")
+        second_match = re.search(r"style\.css\?v=([a-f0-9]+)", second_html)
+        assert second_match is not None
+
+        assert first_match.group(1) != second_match.group(1)
 
 
 class TestProjectDetailPages:
