@@ -66,9 +66,7 @@
     [
       "FastAPI",
       "OpenCV",
-      "YOLO",
       "CUDA",
-      "PyTorch",
       "WebRTC",
       "RTSP",
       "Nginx",

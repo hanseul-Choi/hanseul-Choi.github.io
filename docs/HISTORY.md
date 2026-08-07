@@ -268,3 +268,13 @@
   Kyverno는 컨테이너 env 전용, 문제 4·6과 관련)을 사용자에게 확인 후 반영. 문제 4의 CRI-O
   이슈가 어느 노드 계층에서 발생했는지(Worker vs Control Plane) 함께 확인했고, 기존 문서의
   "Worker Node" 서술이 맞다는 결론이라 그 부분은 수정하지 않음.
+
+## 2026-08-07 — airport-rail-crowd-monitoring 태그에서 YOLO·PyTorch 제거
+
+- **무엇**: `data/projects.yaml`의 airport-rail-crowd-monitoring 태그에서 `YOLO`, `PyTorch`
+  제거. 본문에도 이미 YOLO 모델 학습은 "모델 개발자"가, PyTorch는 서버 런타임 스펙으로만
+  등장하고 사용자의 "직접 수행한 업무" 목록에는 없어 — 태그만 그 구분 없이 노출되던 상태였음.
+  CUDA는 "직접 수행한 업무"에 명시된 실제 작업(Dockerfile·CUDA 환경 설정)이라 그대로 유지.
+- **왜**: "YOLO 태그 제거해줘. 나는 YOLO 개발을 하지 않았는데 오해의 소지가 있을거 같아" 요청.
+  같은 이유로 PyTorch도 위험한지 먼저 확인차 물어봤고, "PyTorch는 내가 안했어. 배포만 했지"
+  라는 답을 받아 함께 제거.
