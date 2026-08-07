@@ -224,3 +224,15 @@
 - **왜**: "project 눌렀을 때 태그별로 프로젝트 보이는 기능 이거 굳이 안필요한거 같아" 요청.
 - **위험/후속 작업**: 카드 내부의 태그 "+N" 펼치기/접기(`.tags-more`)는 이 필터와 별개
   기능이라 그대로 유지함 — 태그를 숨김/펼침하는 것이지 프로젝트 목록을 필터링하는 게 아님.
+
+## 2026-08-07 — realtime-voice-translation 회고 "향후 개선" 목록 수정
+
+- **무엇**: `content/projects/realtime-voice-translation.md` 회고의 "향후 개선한다면" 목록을
+  사용자 요청대로 수정 — PostgreSQL 이전 대상을 RDS Multi-AZ에서 Amazon Aurora(PostgreSQL
+  호환)로 변경, PodDisruptionBudget·`preStop` hook 항목 2개 제거, SLI·SLO 뒤에 AIOps 관련
+  항목 2개 신설: (1) Prophet·LSTM 기반 시계열 예측으로 부하 발생 전에 HPA·Karpenter가 먼저
+  확장하는 동적 오토스케일링, (2) 장애 로그·메트릭 자동 분석 기반 초기 장애보고서 생성과
+  반복 운영 작업(재기동·캐시 정리 등) AIOps 자동화.
+- **왜**: "PostgreSQL을 RDS 대신 Aurora로, PodDisruptionBudget·preStop hook 항목은 잘 몰라서
+  제거, 모니터링 기반 AIOps로 Prophet·LSTM 동적 오토스케일링과 장애보고서·운영 자동화 내용을
+  추가해달라"는 요청 — 문구 정리는 위임받아 직접 작성.

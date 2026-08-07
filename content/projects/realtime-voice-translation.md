@@ -222,10 +222,12 @@ PostgreSQL을 EKS 내부 단일 Pod로 운영하는 등 가용성보다 비용�
 - Terraform state를 S3 backend로 이전하고 state locking 적용
 - 개발·검증·운영 환경별 tfvars 및 state 분리
 - NAT Gateway 다중 AZ 구성 또는 VPC Endpoint 확대
-- PostgreSQL을 RDS Multi-AZ 또는 고가용성 DB 구조로 이전
+- PostgreSQL을 Amazon Aurora(PostgreSQL 호환)로 전환해 고가용성 확보
 - Redis 고가용성 및 영속화 정책 구성
-- PodDisruptionBudget과 graceful shutdown 적용, WebSocket 연결이 남은 Pod의 scale-in 유예
-- `preStop` hook과 `terminationGracePeriodSeconds`를 이용한 연결 종료 처리
 - ArgoCD image updater 또는 승인 기반 이미지 태그 자동화
 - 번역 지연, WebSocket 연결 수, 메시지 누락률을 정량화한 SLI·SLO 구성
+- SLI·SLO 지표를 Prophet·LSTM 기반 시계열 예측에 활용해 트래픽·번역 지연을 사전 예측하고,
+  부하가 몰리기 전에 HPA·Karpenter가 미리 확장하는 동적 오토스케일링(AIOps) 도입
+- 장애 발생 시 로그·메트릭을 자동 분석해 초기 장애보고서를 생성하고, 재기동·캐시 정리 같은
+  반복적인 운영 작업도 AIOps로 처리하는 체계 구축
 - 16,000명 확장을 위한 다중 H200 모델 서버와 중계 서버 확장 전략 수립
