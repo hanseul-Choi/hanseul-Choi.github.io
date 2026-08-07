@@ -746,10 +746,87 @@ main {
   text-transform: uppercase;
 }
 
-.tags li.tag-more {
+/* Tag overflow: same click-to-expand/collapse pattern as
+   .achievements-more (see project_card.html) — a single native
+   <details>/<summary> toggle (no JS), but expressed with flex `order` +
+   `:has()` instead of a flex-column layout, since tags are pills in one
+   wrapping row rather than a vertical list. .tags-toggle and .tag-hidden
+   are flat <li> siblings inside .tags (already display: flex), ordered so
+   the hidden pills land right after the visible ones and the toggle
+   itself jumps to the end once open. */
+
+.tags-toggle {
+  order: 1;
   background: transparent;
+  padding: 0;
+}
+
+.tags-toggle:has(> details[open]) {
+  order: 3;
+}
+
+.tag-hidden {
+  order: 2;
+  display: none;
+}
+
+.tags-toggle:has(> details[open]) ~ .tag-hidden {
+  display: inline-flex;
+}
+
+.tags-more summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: var(--color-text-muted);
-  opacity: 0.75;
+  cursor: pointer;
+  list-style: none;
+  opacity: 0.85;
+}
+
+.tags-more summary::-webkit-details-marker {
+  display: none;
+}
+
+.tags-more summary::before {
+  content: "▸";
+  color: var(--color-accent);
+  transition: transform 0.15s ease;
+}
+
+.tags-more[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.tags-more summary:hover {
+  color: var(--color-text);
+  opacity: 1;
+}
+
+.tags-more summary:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.tags-more .label-hide {
+  display: none;
+}
+
+.tags-more[open] .label-show {
+  display: none;
+}
+
+.tags-more[open] .label-hide {
+  display: inline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tags-more summary::before {
+    transition: none;
+  }
 }
 
 /* Project grouping + tag filter (projects.html) -----------------------------

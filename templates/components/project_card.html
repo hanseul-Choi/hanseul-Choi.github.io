@@ -33,7 +33,17 @@
     {% if project.tags %}
     <ul class="tags">
       {% for tag in shown_tags.visible %}<li>{{ tag }}</li>{% endfor %}
-      {% if shown_tags.hidden_count %}<li class="tag-more">+{{ shown_tags.hidden_count }}</li>{% endif %}
+      {% if shown_tags.hidden_count %}
+      <li class="tags-toggle">
+        <details class="tags-more">
+          <summary>
+            <span class="label-show">+{{ shown_tags.hidden_count }}</span>
+            <span class="label-hide">가리기</span>
+          </summary>
+        </details>
+      </li>
+      {% for tag in shown_tags.hidden %}<li class="tag-hidden">{{ tag }}</li>{% endfor %}
+      {% endif %}
     </ul>
     {% endif %}
     <div class="project-links">
