@@ -19,6 +19,7 @@ from sitebuilder.content_loader import (
     load_projects,
     load_site_config,
 )
+from sitebuilder.contracts import Project
 from sitebuilder.link_checker import LinkIssue, check_internal_links
 from sitebuilder.renderer import RenderError, create_environment, render_page
 
@@ -56,6 +57,37 @@ def _compute_asset_version(static_dir: Path) -> str:
         if path.is_file():
             digest.update(path.read_bytes())
     return digest.hexdigest()[:10]
+
+
+def _group_projects_by_category(projects: list[Project]) -> list[tuple[str, list[Project]]]:
+    """Group projects by `category`, preserving each category's first-
+    appearance order.
+
+    `projects` is expected to already be sorted by `Project.order` (as
+    `load_projects` returns it) — grouping then walks that list in order and
+    buckets by category using a dict, whose iteration order in Python is
+    insertion order. So the category containing the lowest-`order` project
+    is shown first, with no separate "category order" field to keep in sync.
+    """
+    groups: dict[str, list[Project]] = {}
+    for project in projects:
+        groups.setdefault(project.category, []).append(project)
+    return list(groups.items())
+
+
+def _collect_tags(projects: list[Project]) -> list[str]:
+    """Every distinct tag across `projects`, in first-appearance order.
+
+    Feeds the /projects/ tag filter's chip list (see templates/projects.html)
+    — first-appearance order keeps it deterministic without imposing an
+    unrelated alphabetical/frequency sort on top of the author's existing
+    manual `order` field.
+    """
+    seen: dict[str, None] = {}
+    for project in projects:
+        for tag in project.tags:
+            seen.setdefault(tag, None)
+    return list(seen)
 
 
 def _ensure_output_dir_allowed(output_dir: Path, project_root: Path) -> Path:
@@ -145,6 +177,8 @@ def build_site(
             site=site_config,
             nav=nav,
             projects=projects,
+            project_groups=_group_projects_by_category(projects),
+            all_tags=_collect_tags(projects),
             current_path="/projects/",
             detail_slugs=detail_slugs,
             project_details=project_details,

@@ -66,8 +66,8 @@ class TestLoadNavigation:
 class TestLoadProjects:
     def test_loads_and_sorts_by_order(self, tmp_path: Path) -> None:
         (tmp_path / "projects.yaml").write_text(
-            "- slug: second\n  title: Second\n  summary: s\n  order: 2\n"
-            "- slug: first\n  title: First\n  summary: s\n  order: 1\n",
+            "- slug: second\n  title: Second\n  summary: s\n  category: c\n  order: 2\n"
+            "- slug: first\n  title: First\n  summary: s\n  category: c\n  order: 1\n",
             encoding="utf-8",
         )
         projects = load_projects(tmp_path)
@@ -79,7 +79,8 @@ class TestLoadProjects:
 
     def test_duplicate_slug_raises(self, tmp_path: Path) -> None:
         (tmp_path / "projects.yaml").write_text(
-            "- slug: dup\n  title: A\n  summary: s\n- slug: dup\n  title: B\n  summary: s\n",
+            "- slug: dup\n  title: A\n  summary: s\n  category: c\n"
+            "- slug: dup\n  title: B\n  summary: s\n  category: c\n",
             encoding="utf-8",
         )
         with pytest.raises(ContentLoadError, match="Duplicate project slug"):
@@ -87,7 +88,14 @@ class TestLoadProjects:
 
     def test_invalid_entry_raises(self, tmp_path: Path) -> None:
         (tmp_path / "projects.yaml").write_text(
-            "- slug: 'Not Valid'\n  title: A\n  summary: s\n", encoding="utf-8"
+            "- slug: 'Not Valid'\n  title: A\n  summary: s\n  category: c\n", encoding="utf-8"
+        )
+        with pytest.raises(ContentLoadError, match="Invalid project entry"):
+            load_projects(tmp_path)
+
+    def test_missing_category_raises(self, tmp_path: Path) -> None:
+        (tmp_path / "projects.yaml").write_text(
+            "- slug: ok\n  title: A\n  summary: s\n", encoding="utf-8"
         )
         with pytest.raises(ContentLoadError, match="Invalid project entry"):
             load_projects(tmp_path)

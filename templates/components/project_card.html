@@ -1,6 +1,8 @@
 {% import "components/icons.html" as icons %}
 {% set detail = project_details.get(project.slug) if project_details is defined else none %}
-<article class="project-card">
+{% set shown_achievements = project.achievements | truncated(2) %}
+{% set shown_tags = project.tags | truncated(5) %}
+<article class="project-card" data-tags="{{ project.tags | join(' ') }}">
   <div class="project-thumb">
     {% if project.image_url %}
     <img src="{{ project.image_url }}" alt="{{ project.title }} screenshot">
@@ -9,16 +11,21 @@
     {% endif %}
   </div>
   <div class="project-body">
+    <span class="project-category-badge">{{ project.category }}</span>
     <h2>{{ project.title }}</h2>
     <p>{{ project.summary }}</p>
     {% if project.achievements %}
     <ul class="achievements">
-      {% for item in project.achievements %}<li>{{ item }}</li>{% endfor %}
+      {% for item in shown_achievements.visible %}<li>{{ item }}</li>{% endfor %}
+      {% if shown_achievements.hidden_count %}
+      <li class="more-count">+{{ shown_achievements.hidden_count }}개 더</li>
+      {% endif %}
     </ul>
     {% endif %}
     {% if project.tags %}
     <ul class="tags">
-      {% for tag in project.tags %}<li>{{ tag }}</li>{% endfor %}
+      {% for tag in shown_tags.visible %}<li>{{ tag }}</li>{% endfor %}
+      {% if shown_tags.hidden_count %}<li class="tag-more">+{{ shown_tags.hidden_count }}</li>{% endif %}
     </ul>
     {% endif %}
     <div class="project-links">
@@ -39,6 +46,7 @@
   <div class="modal-box">
     <a href="#" class="modal-close" aria-label="닫기">✕</a>
     <article class="prose">
+      <span class="project-category-badge">{{ project.category }}</span>
       <h2>{{ project.title }}</h2>
       <p class="lede">{{ project.summary }}</p>
 

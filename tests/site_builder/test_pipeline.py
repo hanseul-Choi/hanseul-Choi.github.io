@@ -12,10 +12,13 @@ from typing import Any
 
 import pytest
 
+from sitebuilder.contracts import Project
 from sitebuilder.site_builder.pipeline import (
     BuildError,
     BuildResult,
+    _collect_tags,
     _ensure_output_dir_allowed,
+    _group_projects_by_category,
     build_site,
 )
 from tests.site_builder.conftest import SitePaths
@@ -147,6 +150,77 @@ class TestProjectDetailPages:
         result = _build(site_paths)
         projects_html = (result.output_dir / "projects" / "index.html").read_text(encoding="utf-8")
         assert "Cut latency 50%" in projects_html
+
+
+def _project(slug: str, category: str, order: int, tags: list[str] | None = None) -> Project:
+    return Project(
+        slug=slug,
+        title=slug,
+        summary="s",
+        category=category,
+        order=order,
+        tags=tags or [],
+    )
+
+
+class TestGroupProjectsByCategory:
+    def test_groups_preserve_first_appearance_order(self) -> None:
+        # "b" comes first in the (already order-sorted) input, so its
+        # category leads even though "Infra" projects exist too.
+        projects = [
+            _project("b", "Infra", order=1),
+            _project("a", "Platform", order=2),
+            _project("c", "Infra", order=3),
+        ]
+        groups = _group_projects_by_category(projects)
+        assert [category for category, _ in groups] == ["Infra", "Platform"]
+
+    def test_projects_within_a_category_keep_their_relative_order(self) -> None:
+        projects = [
+            _project("first", "Infra", order=1),
+            _project("second", "Infra", order=2),
+        ]
+        groups = _group_projects_by_category(projects)
+        assert [p.slug for p in dict(groups)["Infra"]] == ["first", "second"]
+
+    def test_empty_project_list_returns_empty_groups(self) -> None:
+        assert _group_projects_by_category([]) == []
+
+
+class TestCollectTags:
+    def test_collects_unique_tags_in_first_appearance_order(self) -> None:
+        projects = [
+            _project("a", "Infra", order=1, tags=["Python", "AWS"]),
+            _project("b", "Infra", order=2, tags=["AWS", "Kubernetes"]),
+        ]
+        assert _collect_tags(projects) == ["Python", "AWS", "Kubernetes"]
+
+    def test_no_tags_returns_empty_list(self) -> None:
+        assert _collect_tags([_project("a", "Infra", order=1)]) == []
+
+    def test_empty_project_list_returns_empty_list(self) -> None:
+        assert _collect_tags([]) == []
+
+
+class TestProjectsPageCategoryAndTagWiring:
+    """End-to-end check that build_site() threads project_groups/all_tags
+    into the real projects.html render call (see conftest._PROJECTS_TEMPLATE,
+    which stands in for the real template)."""
+
+    def test_category_heading_appears_on_projects_page(self, site_paths: SitePaths) -> None:
+        result = _build(site_paths)
+        projects_html = (result.output_dir / "projects" / "index.html").read_text(encoding="utf-8")
+        assert "Demo Category" in projects_html
+
+    def test_tag_appears_in_all_tags_list_on_projects_page(self, site_paths: SitePaths) -> None:
+        result = _build(site_paths)
+        projects_html = (result.output_dir / "projects" / "index.html").read_text(encoding="utf-8")
+        assert "<li>Python</li>" in projects_html
+
+    def test_card_carries_full_tag_list_for_css_filtering(self, site_paths: SitePaths) -> None:
+        result = _build(site_paths)
+        projects_html = (result.output_dir / "projects" / "index.html").read_text(encoding="utf-8")
+        assert 'data-tags="Python"' in projects_html
 
 
 class TestBuildSiteFailures:

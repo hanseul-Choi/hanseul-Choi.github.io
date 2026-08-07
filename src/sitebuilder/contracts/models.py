@@ -51,6 +51,7 @@ class Project(BaseModel):
     slug: str
     title: str
     summary: str
+    category: str
     tags: list[str] = []
     achievements: list[str] = []
     repo_url: str | None = None
@@ -70,11 +71,25 @@ class Project(BaseModel):
             )
         return value
 
-    @field_validator("title", "summary")
+    @field_validator("title", "summary", "category")
     @classmethod
     def not_blank(cls, value: str) -> str:
         if not value.strip():
             raise ValueError("field must not be blank")
+        return value
+
+    @field_validator("tags")
+    @classmethod
+    def tags_have_no_whitespace(cls, value: list[str]) -> list[str]:
+        # The /projects/ tag filter matches tags via a CSS attribute selector
+        # (`[data-tags~="..."]`) against a space-separated attribute value —
+        # a tag containing whitespace would silently split into two tokens
+        # there and never match as intended.
+        for tag in value:
+            if not tag or tag != tag.strip() or " " in tag:
+                raise ValueError(
+                    f"Project.tags entry {tag!r} must be a single non-blank token with no spaces"
+                )
         return value
 
 

@@ -28,7 +28,9 @@ _PROJECTS_YAML = (
     "- slug: demo\n"
     "  title: Demo\n"
     "  summary: A demo project.\n"
+    "  category: Demo Category\n"
     "  achievements: ['Cut latency 50%']\n"
+    "  tags: ['Python']\n"
     "  order: 1\n"
 )
 
@@ -57,12 +59,18 @@ _HOME_TEMPLATE = (
 )
 _PROJECTS_TEMPLATE = (
     "{% extends 'base.html' %}{% block content %}"
-    "{% for project in projects %}{% include 'components/project_card.html' %}{% endfor %}"
+    "{% for category, group in project_groups %}"
+    "<h2 class='category'>{{ category }}</h2>"
+    "{% for project in group %}{% include 'components/project_card.html' %}{% endfor %}"
+    "{% endfor %}"
+    "{% if all_tags %}<ul class='all-tags'>"
+    "{% for tag in all_tags %}<li>{{ tag }}</li>{% endfor %}</ul>{% endif %}"
     "{% endblock %}"
 )
 _PROJECT_CARD_TEMPLATE = (
     "{% set detail = project_details.get(project.slug) if project_details is defined else none %}"
-    "<article><h2>{{ project.title }}</h2><p>{{ project.summary }}</p>"
+    "<article data-tags=\"{{ project.tags | join(' ') }}\">"
+    "<h2>{{ project.title }}</h2><p>{{ project.summary }}</p>"
     "{% if project.achievements %}<ul class='ach'>"
     "{% for a in project.achievements %}<li>{{ a }}</li>{% endfor %}</ul>{% endif %}"
     "{% if detail %}"

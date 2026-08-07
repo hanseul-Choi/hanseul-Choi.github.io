@@ -108,6 +108,20 @@ def _lightbox_images(html: str) -> Markup:
     return Markup(str(soup))
 
 
+def _truncated(items: list[str], limit: int) -> dict[str, Any]:
+    """Split a list into what a compact card shows and how many are hidden.
+
+    Used by project_card.html to keep the achievement/tag lists scannable
+    when there are several projects on one page — the full list is still one
+    click away via the project's modal/detail page, which renders the
+    untruncated list directly from `project.achievements`/`project.tags`.
+
+    Returns {"visible": items[:limit], "hidden_count": max(0, len(items) - limit)}.
+    """
+    hidden_count = max(0, len(items) - limit)
+    return {"visible": items[:limit], "hidden_count": hidden_count}
+
+
 def create_environment(templates_dir: Path) -> jinja2.Environment:
     """Build a Jinja2 environment rooted at `templates_dir`.
 
@@ -127,6 +141,7 @@ def create_environment(templates_dir: Path) -> jinja2.Environment:
     env.filters["initials"] = _initials
     env.filters["collapsible_h3"] = _collapsible_h3
     env.filters["lightbox_images"] = _lightbox_images
+    env.filters["truncated"] = _truncated
     # A callable global (not a fixed value) so long-running processes (e.g.
     # `serve` across a year boundary) never render a stale build-time year.
     env.globals["build_year"] = lambda: datetime.now(UTC).year
