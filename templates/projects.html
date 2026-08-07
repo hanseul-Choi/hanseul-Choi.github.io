@@ -5,11 +5,52 @@
     <h1>Projects</h1>
     <p>만든 것들을 모아둡니다.</p>
   </div>
-  {% if projects %}
-  <div class="project-grid">
-    {% for project in projects %}
-      {% include "components/project_card.html" %}
+
+  {% if project_groups %}
+  <div class="projects-filterable">
+    {% if all_tags %}
+    {# The filter radios and .project-groups below must stay *flat, direct
+       siblings* under this one parent — the CSS ":checked ~ .project-groups"
+       rule generated further down only works between actual siblings, so
+       nothing may wrap the inputs on their own (no <fieldset>, no extra
+       <div>). .projects-filterable itself is the flex container that lays
+       the chips out in a row and pushes .project-groups onto its own line
+       (see static/css/main.css). #}
+    <span class="sr-only">기술 태그로 필터링</span>
+    <input type="radio" name="tag-filter" id="tag-filter-all" class="tag-filter-input" checked>
+    <label for="tag-filter-all" class="tag-chip">전체</label>
+    {% for tag in all_tags %}
+    <input type="radio" name="tag-filter" id="tag-filter-{{ loop.index }}" class="tag-filter-input">
+    <label for="tag-filter-{{ loop.index }}" class="tag-chip">{{ tag }}</label>
     {% endfor %}
+    {# Filter matching is generated per build from the actual tag data, so it
+       lives here (scoped to this page) rather than in the static stylesheet.
+       Each rule pair hides non-matching cards, then hides any category
+       section left with none of its cards visible. #}
+    <style>
+      {% for tag in all_tags %}
+      #tag-filter-{{ loop.index }}:checked ~ .project-groups .project-card:not([data-tags~="{{ tag }}"]) {
+        display: none;
+      }
+      #tag-filter-{{ loop.index }}:checked ~ .project-groups .project-group:not(:has(.project-card[data-tags~="{{ tag }}"])) {
+        display: none;
+      }
+      {% endfor %}
+    </style>
+    {% endif %}
+
+    <div class="project-groups">
+      {% for category, group_projects in project_groups %}
+      <section class="project-group">
+        <h2 class="project-group-title">{{ category }}</h2>
+        <div class="project-grid">
+          {% for project in group_projects %}
+            {% include "components/project_card.html" %}
+          {% endfor %}
+        </div>
+      </section>
+      {% endfor %}
+    </div>
   </div>
   {% else %}
   <div class="empty-state">
