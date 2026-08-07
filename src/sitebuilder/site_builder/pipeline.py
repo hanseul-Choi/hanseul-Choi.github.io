@@ -75,21 +75,6 @@ def _group_projects_by_category(projects: list[Project]) -> list[tuple[str, list
     return list(groups.items())
 
 
-def _collect_tags(projects: list[Project]) -> list[str]:
-    """Every distinct tag across `projects`, in first-appearance order.
-
-    Feeds the /projects/ tag filter's chip list (see templates/projects.html)
-    — first-appearance order keeps it deterministic without imposing an
-    unrelated alphabetical/frequency sort on top of the author's existing
-    manual `order` field.
-    """
-    seen: dict[str, None] = {}
-    for project in projects:
-        for tag in project.tags:
-            seen.setdefault(tag, None)
-    return list(seen)
-
-
 def _ensure_output_dir_allowed(output_dir: Path, project_root: Path) -> Path:
     """Refuse to build into a directory outside `project_root` (THREAT_MODEL.md #1)."""
     resolved_root = project_root.resolve()
@@ -178,7 +163,6 @@ def build_site(
             nav=nav,
             projects=projects,
             project_groups=_group_projects_by_category(projects),
-            all_tags=_collect_tags(projects),
             current_path="/projects/",
             detail_slugs=detail_slugs,
             project_details=project_details,

@@ -16,7 +16,6 @@ from sitebuilder.contracts import Project
 from sitebuilder.site_builder.pipeline import (
     BuildError,
     BuildResult,
-    _collect_tags,
     _ensure_output_dir_allowed,
     _group_projects_by_category,
     build_site,
@@ -152,14 +151,13 @@ class TestProjectDetailPages:
         assert "Cut latency 50%" in projects_html
 
 
-def _project(slug: str, category: str, order: int, tags: list[str] | None = None) -> Project:
+def _project(slug: str, category: str, order: int) -> Project:
     return Project(
         slug=slug,
         title=slug,
         summary="s",
         category=category,
         order=order,
-        tags=tags or [],
     )
 
 
@@ -187,40 +185,15 @@ class TestGroupProjectsByCategory:
         assert _group_projects_by_category([]) == []
 
 
-class TestCollectTags:
-    def test_collects_unique_tags_in_first_appearance_order(self) -> None:
-        projects = [
-            _project("a", "Infra", order=1, tags=["Python", "AWS"]),
-            _project("b", "Infra", order=2, tags=["AWS", "Kubernetes"]),
-        ]
-        assert _collect_tags(projects) == ["Python", "AWS", "Kubernetes"]
-
-    def test_no_tags_returns_empty_list(self) -> None:
-        assert _collect_tags([_project("a", "Infra", order=1)]) == []
-
-    def test_empty_project_list_returns_empty_list(self) -> None:
-        assert _collect_tags([]) == []
-
-
-class TestProjectsPageCategoryAndTagWiring:
-    """End-to-end check that build_site() threads project_groups/all_tags
-    into the real projects.html render call (see conftest._PROJECTS_TEMPLATE,
-    which stands in for the real template)."""
+class TestProjectsPageCategoryWiring:
+    """End-to-end check that build_site() threads project_groups into the
+    real projects.html render call (see conftest._PROJECTS_TEMPLATE, which
+    stands in for the real template)."""
 
     def test_category_heading_appears_on_projects_page(self, site_paths: SitePaths) -> None:
         result = _build(site_paths)
         projects_html = (result.output_dir / "projects" / "index.html").read_text(encoding="utf-8")
         assert "Demo Category" in projects_html
-
-    def test_tag_appears_in_all_tags_list_on_projects_page(self, site_paths: SitePaths) -> None:
-        result = _build(site_paths)
-        projects_html = (result.output_dir / "projects" / "index.html").read_text(encoding="utf-8")
-        assert "<li>Python</li>" in projects_html
-
-    def test_card_carries_full_tag_list_for_css_filtering(self, site_paths: SitePaths) -> None:
-        result = _build(site_paths)
-        projects_html = (result.output_dir / "projects" / "index.html").read_text(encoding="utf-8")
-        assert 'data-tags="Python"' in projects_html
 
 
 class TestBuildSiteFailures:
