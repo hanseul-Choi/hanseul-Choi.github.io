@@ -3,7 +3,26 @@
   title: "기업용 AI 플랫폼 · OpenAPI 구축/운영"
   summary: "롯데이노베이트의 기업용 AI 플랫폼 '아이멤버'와 금융권 고객사 폐쇄망 Kubernetes 환경의 플랫폼·GPU 운영을 담당했습니다."
   category: "AI/플랫폼"
-  tags: ["Kubernetes", "GPU/MIG", "Kong", "Kafka", "Jenkins", "ArgoCD", "Prometheus", "vLLM"]
+  tags:
+    [
+      "Kubernetes",
+      "GPU/MIG",
+      "H100",
+      "vLLM",
+      "NVLink",
+      "InfiniBand",
+      "Kong",
+      "Kafka",
+      "Jenkins",
+      "ArgoCD",
+      "Helm",
+      "Cilium",
+      "AWS",
+      "PostgreSQL",
+      "Prometheus",
+      "Grafana",
+      "Vault",
+    ]
   achievements:
     - "회의록 Kafka 처리 성공률 70% → 99%로 개선"
     - "GPT·SSE 504 오류 일 100건 이상 → 1건 미만으로 감소"
@@ -15,7 +34,22 @@
   title: "외국인 근로자 실시간 음성 번역 서비스"
   summary: "D 건설사 건설 현장의 외국인 근로자에게 안전조례·작업지시를 약 20개 언어로 실시간 전달하는 서비스의 AWS 인프라를 5인 팀에서 인프라 담당으로 처음부터 설계·구축했습니다."
   category: "인프라"
-  tags: ["AWS", "Terraform", "EKS", "Kubernetes", "Redis", "ArgoCD", "Prometheus"]
+  tags:
+    [
+      "AWS",
+      "Terraform",
+      "EKS",
+      "Kubernetes",
+      "Karpenter",
+      "Redis",
+      "ArgoCD",
+      "Jenkins",
+      "Helm",
+      "Prometheus",
+      "Grafana",
+      "Loki",
+      "PostgreSQL",
+    ]
   achievements:
     - "Artillery로 40개 방×200명, 총 8,000명 동시 WebSocket·실제 번역 부하 테스트 통과"
     - "고객 요구사항 3초 이내 전달 기준 충족, 테스트 환경에서 대부분 약 1초 이내 확인"
@@ -27,7 +61,20 @@
   title: "공항철도 실시간 혼잡도 분석·관제 시스템"
   summary: "계양역 폐쇄망 환경에서 CCTV 48채널을 실시간 분석해 혼잡도를 계산하고, 관제 담당자의 수작업 보고를 자동화하는 9인 프로젝트의 백엔드·인프라를 담당했습니다."
   category: "실시간 시스템"
-  tags: ["FastAPI", "OpenCV", "WebRTC", "Nginx", "PostgreSQL", "Docker", "YOLO"]
+  tags:
+    [
+      "FastAPI",
+      "OpenCV",
+      "YOLO",
+      "CUDA",
+      "PyTorch",
+      "WebRTC",
+      "RTSP",
+      "Nginx",
+      "PostgreSQL",
+      "Docker",
+      "Coturn",
+    ]
   achievements:
     - "RTSP 프레임 수신~WebRTC 전달 지연 0.5초 → 0.1초로 약 80% 단축"
     - "원본/통계 테이블 분리+인덱싱으로 1년치 통계 조회 10초 → 5초로 단축"
