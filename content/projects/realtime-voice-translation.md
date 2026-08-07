@@ -106,9 +106,10 @@ HPA scale-out·scale-in 환경에서 WebSocket 연결과 메시지 전달을 재
 
 ### 2. 장시간 부하에서 API Pod 메모리 증가
 
-**문제** — 부하 테스트 중 API Pod의 메모리 사용량이 시간에 따라 계속 증가하는 현상을
-확인했다. Backend Pod에는 아래와 같은 resource 제한이 적용돼 있었고, 증가가 지속되면 HPA
-확장과 서비스 불안정으로 이어질 가능성이 있었다.
+**문제** — 부하 테스트 중 API Pod의 메모리 사용량이 시간에 따라 계속 증가해 평소 대비 약
+3배 수준까지, limit에 거의 도달할 정도로 늘어나는 현상을 확인했다. Backend Pod에는 아래와
+같은 resource 제한이 적용돼 있었고, 증가가 지속되면 HPA 확장과 서비스 불안정으로 이어질
+가능성이 있었다.
 
 ```
 resources:
@@ -129,8 +130,9 @@ resources:
 Backend를 수정하고, 종료 후 남아 있는 요청·버퍼 참조를 제거하도록 개선했다. 수정 후 동일
 부하를 재현해 검증하고, Grafana·Prometheus로 Pod 리소스 변화를 지속 확인할 수 있도록 구성했다.
 
-**결과** — 부하 종료 이후 API Pod의 메모리 사용량이 정상 수준으로 회복되는 것을 확인했으며,
-OOMKilled로 이어지기 전 메모리 누수 가능성을 발견하고 개선했다.
+**결과** — 평소 대비 약 3배까지 늘어 limit에 근접했던 메모리 사용량이 부하 종료 이후 정상
+수준으로 회복되는 것을 확인했으며, OOMKilled로 이어지기 전 메모리 누수 가능성을 발견하고
+개선했다.
 
 ### 3. 8,000명 동시 접속 WebSocket 부하 검증
 
@@ -196,7 +198,8 @@ PVC의 AZ 종속성을 고려해 app-db 노드를 특정 AZ에 고정했다.
 - `40개 방 × 200명` 기준 8,000명 동시 WebSocket 부하 테스트 통과, 고객 요구사항 3초 이내 전달 충족
 - HPA로 Backend Pod를 1~5개까지 확장, Karpenter로 app Node 최대 3대까지 자동 증설
 - Pod가 1개~5개로 확장되는 환경에서 발생한 WebSocket 상태 불일치를 분석하고 Redis 공유 상태 환경 구축
-- Pod 메모리 증가 현상을 모니터링으로 발견하고 WebSocket·번역 요청 cleanup 개선 지원
+- 부하 지속 시 평소 대비 약 3배까지 늘어 limit에 근접했던 Pod 메모리 증가 현상을 모니터링으로
+  발견하고 WebSocket·번역 요청 cleanup 개선으로 정상 수준까지 회복시킴
 - EKS API를 private only로 구성, SSM Bastion을 통한 운영 접근 적용
 - NAT Elastic IP로 사내 H200 모델 서버와의 outbound IP 고정
 - 일반 서비스·PostgreSQL·빌드 워크로드를 3개 전용 노드 그룹(app/app-db/build)으로 격리
