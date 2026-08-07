@@ -194,12 +194,12 @@ PVC의 AZ 종속성을 고려해 app-db 노드를 특정 AZ에 고정했다.
 - 시범 운영 이후 실제 서비스로 전환되어 약 5개 현장, 약 2,000명 사용
 - 약 20개 언어의 실시간 STT·번역 결과 제공, 건설 전문용어 번역을 위한 용어집 기반 RAG 연동
 - `40개 방 × 200명` 기준 8,000명 동시 WebSocket 부하 테스트 통과, 고객 요구사항 3초 이내 전달 충족
-- HPA로 Backend Pod를 1~5개까지 확장, Karpenter로 app Node 자동 증설
-- 다중 Pod 환경의 WebSocket 상태 불일치를 분석하고 Redis 공유 상태 환경 구축
+- HPA로 Backend Pod를 1~5개까지 확장, Karpenter로 app Node 최대 3대까지 자동 증설
+- Pod가 1개~5개로 확장되는 환경에서 발생한 WebSocket 상태 불일치를 분석하고 Redis 공유 상태 환경 구축
 - Pod 메모리 증가 현상을 모니터링으로 발견하고 WebSocket·번역 요청 cleanup 개선 지원
 - EKS API를 private only로 구성, SSM Bastion을 통한 운영 접근 적용
 - NAT Elastic IP로 사내 H200 모델 서버와의 outbound IP 고정
-- 일반 서비스·PostgreSQL·빌드 워크로드를 전용 노드 그룹으로 격리
+- 일반 서비스·PostgreSQL·빌드 워크로드를 3개 전용 노드 그룹(app/app-db/build)으로 격리
 - Jenkins·ECR·ArgoCD 기반 CI/CD 및 롤백 체계, Prometheus·Grafana·Loki·Alloy 기반 모니터링 구축
 - 고객사별 AWS 환경을 Terraform 변수 변경으로 재사용할 수 있는 구조 설계
 
