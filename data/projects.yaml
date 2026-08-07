@@ -5,8 +5,8 @@
   category: "AI/플랫폼"
   tags: ["Kubernetes", "GPU/MIG", "Kong", "Kafka", "Jenkins", "ArgoCD", "Prometheus", "vLLM"]
   achievements:
-    - "회의록 Kafka 처리 성공률 30% → 99%로 개선"
-    - "GPT·SSE 504 오류 일 100건 이상 → 2~5건으로 감소"
+    - "회의록 Kafka 처리 성공률 70% → 99%로 개선"
+    - "GPT·SSE 504 오류 일 100건 이상 → 1건 미만으로 감소"
     - "H100 4장에 MIG 적용, 최대 12개 독립 GPU 단위로 분할"
     - "신규 모델 배포 요청 → API 서빙까지 약 1시간 이내 구성"
   order: 1
