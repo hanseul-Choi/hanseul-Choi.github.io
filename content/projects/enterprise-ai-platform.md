@@ -286,9 +286,13 @@ API까지 여러 계층을 거친다. GPT·SSE 504 장애도 Gateway Timeout 조
 - Kong, Backend, 외부 AI 요청에 대한 분산 추적 도입
 - Kafka Consumer Lag·리밸런싱·처리 성공률 대시보드 구축
 - 모델별 GPU·HBM 사용량과 요청량을 연결한 Capacity Planning
+- GPU·모델 요청량 추이를 Prophet·LSTM 등 시계열 예측에 활용해 사전 Capacity Planning과
+  이상 탐지를 자동화하는 AIOps 도입
 - MIG Profile별 모델 성능 및 비용 효율 벤치마크
 - NAS와 Node Local Cache의 모델 버전·용량 자동 관리
 - Vault를 운영계까지 확대하고 Secret Rotation 자동화
 - NodeNotReady 발생 시 `sar`, Core Dump, Runtime 로그 자동 수집
+- 장애 로그·메트릭을 자동 분석해 초기 장애보고서를 생성하고, 반복적인 점검·복구 작업을
+  AIOps로 자동화
 - CPU Throttling, DB Connection, 외부 API Retry를 포함한 운영 Runbook 고도화
 - 장기 SSE 요청을 비동기 작업과 결과 조회 방식으로 분리하는 구조 검토

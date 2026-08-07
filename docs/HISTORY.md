@@ -236,3 +236,21 @@
 - **왜**: "PostgreSQL을 RDS 대신 Aurora로, PodDisruptionBudget·preStop hook 항목은 잘 몰라서
   제거, 모니터링 기반 AIOps로 Prophet·LSTM 동적 오토스케일링과 장애보고서·운영 자동화 내용을
   추가해달라"는 요청 — 문구 정리는 위임받아 직접 작성.
+
+## 2026-08-07 — 나머지 두 프로젝트 회고 리뷰 + AIOps 항목 확대
+
+- **무엇**: 사용자 요청으로 `enterprise-ai-platform`·`airport-rail-crowd-monitoring` 회고의
+  "향후 개선" 목록을 처음부터 다시 검토. 두 문서 다 "회고에서만 언급되고 본문(기술/역할/
+  구조도)에는 전혀 안 나오는 용어"가 있는지 확인한 결과:
+  - `enterprise-ai-platform`: 전 항목이 본문에서 이미 다룬 내용에 뿌리를 두고 있어 특이사항 없음.
+  - `airport-rail-crowd-monitoring`: `SQLAlchemy Session 경계` 항목은 본문 어디에도 없어
+    확인을 요청 → 사용자가 그대로 유지 결정. `Prometheus·Grafana` 모니터링 항목도 본문에
+    없어 확인을 요청 → 사용자가 "실제로 구성돼 있다"고 확인, `data/projects.yaml` 태그에
+    `Prometheus`·`Grafana` 추가.
+  - 사용자가 confirm한 AIOps 방향(음성 번역 프로젝트에 먼저 적용)을 나머지 두 프로젝트
+    회고에도 각각 2개 항목씩 추가: 예측(Prophet·LSTM 시계열 예측 기반 사전 Capacity
+    Planning/이상 탐지)과 장애·운영 자동화(장애보고서 자동 생성, 반복 작업 자동화) 쌍으로
+    세 프로젝트 전체에 일관된 톤을 맞춤.
+- **왜**: "다른 프로젝트 회고도 한번 훑어봐줄래" 요청에 대한 리뷰 결과 보고 후, "AIOps 방향
+  항목을 추가해줘. 1번[SQLAlchemy] 그대로 두고 2번[Prometheus/Grafana]도 태그랑 다 넣어줘.
+  실제로 구성되어있어"라는 확정 답변을 받아 진행.
