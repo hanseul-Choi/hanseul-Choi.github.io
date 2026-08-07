@@ -611,8 +611,52 @@ main {
   font-weight: 700;
 }
 
-.achievements li.more-count::before {
-  content: none;
+.achievements-more {
+  margin-top: -0.1rem;
+}
+
+.achievements-more summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  list-style: none;
+}
+
+.achievements-more summary::-webkit-details-marker {
+  display: none;
+}
+
+.achievements-more summary::before {
+  content: "▸";
+  color: var(--color-accent);
+  transition: transform 0.15s ease;
+}
+
+.achievements-more[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.achievements-more summary:hover {
+  color: var(--color-text);
+}
+
+.achievements-more summary:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.achievements-more .achievements {
+  margin-top: 0.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .achievements-more summary::before {
+    transition: none;
+  }
 }
 
 .achievements-detail {
@@ -672,11 +716,6 @@ main {
   letter-spacing: 0.02em;
   color: var(--color-accent);
   text-transform: uppercase;
-}
-
-.more-count {
-  color: var(--color-text-muted);
-  opacity: 0.75;
 }
 
 .tags li.tag-more {

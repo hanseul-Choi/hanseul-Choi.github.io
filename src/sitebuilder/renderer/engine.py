@@ -109,17 +109,19 @@ def _lightbox_images(html: str) -> Markup:
 
 
 def _truncated(items: list[str], limit: int) -> dict[str, Any]:
-    """Split a list into what a compact card shows and how many are hidden.
+    """Split a list into what a compact card shows up front and what's tucked
+    behind a "+N개 더" expander.
 
     Used by project_card.html to keep the achievement/tag lists scannable
-    when there are several projects on one page — the full list is still one
-    click away via the project's modal/detail page, which renders the
-    untruncated list directly from `project.achievements`/`project.tags`.
+    when there are several projects on one page — `hidden` is rendered inside
+    a native `<details>` the visitor can expand right there in the card
+    (no JS), so the full list is never more than one click away.
 
-    Returns {"visible": items[:limit], "hidden_count": max(0, len(items) - limit)}.
+    Returns {"visible": items[:limit], "hidden": items[limit:], "hidden_count": len(hidden)}.
     """
-    hidden_count = max(0, len(items) - limit)
-    return {"visible": items[:limit], "hidden_count": hidden_count}
+    visible = items[:limit]
+    hidden = items[limit:]
+    return {"visible": visible, "hidden": hidden, "hidden_count": len(hidden)}
 
 
 def create_environment(templates_dir: Path) -> jinja2.Environment:

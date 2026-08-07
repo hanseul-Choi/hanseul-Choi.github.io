@@ -17,10 +17,15 @@
     {% if project.achievements %}
     <ul class="achievements">
       {% for item in shown_achievements.visible %}<li>{{ item }}</li>{% endfor %}
-      {% if shown_achievements.hidden_count %}
-      <li class="more-count">+{{ shown_achievements.hidden_count }}개 더</li>
-      {% endif %}
     </ul>
+    {% if shown_achievements.hidden_count %}
+    <details class="achievements-more">
+      <summary>+{{ shown_achievements.hidden_count }}개 더</summary>
+      <ul class="achievements">
+        {% for item in shown_achievements.hidden %}<li>{{ item }}</li>{% endfor %}
+      </ul>
+    </details>
+    {% endif %}
     {% endif %}
     {% if project.tags %}
     <ul class="tags">

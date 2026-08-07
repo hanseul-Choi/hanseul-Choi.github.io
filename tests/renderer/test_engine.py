@@ -26,7 +26,9 @@ def templates_dir(tmp_path: Path) -> Path:
     (tmp_path / "lightbox.html").write_text("{{ body | lightbox_images }}", encoding="utf-8")
     (tmp_path / "truncated.html").write_text(
         "{% set t = items | truncated(limit) %}"
-        "visible={{ t.visible | join(',') }};hidden={{ t.hidden_count }}",
+        "visible={{ t.visible | join(',') }};"
+        "hidden_items={{ t.hidden | join(',') }};"
+        "hidden_count={{ t.hidden_count }}",
         encoding="utf-8",
     )
     return tmp_path
@@ -210,19 +212,19 @@ class TestTruncatedFilter:
     def test_fewer_items_than_limit_are_all_visible(self, templates_dir: Path) -> None:
         env = create_environment(templates_dir)
         output = render_page(env, "truncated.html", items=["a", "b"], limit=5)
-        assert output == "visible=a,b;hidden=0"
+        assert output == "visible=a,b;hidden_items=;hidden_count=0"
 
     def test_exactly_limit_items_are_all_visible(self, templates_dir: Path) -> None:
         env = create_environment(templates_dir)
         output = render_page(env, "truncated.html", items=["a", "b"], limit=2)
-        assert output == "visible=a,b;hidden=0"
+        assert output == "visible=a,b;hidden_items=;hidden_count=0"
 
     def test_more_items_than_limit_are_truncated_with_a_count(self, templates_dir: Path) -> None:
         env = create_environment(templates_dir)
         output = render_page(env, "truncated.html", items=["a", "b", "c", "d"], limit=2)
-        assert output == "visible=a,b;hidden=2"
+        assert output == "visible=a,b;hidden_items=c,d;hidden_count=2"
 
     def test_empty_list_is_untouched(self, templates_dir: Path) -> None:
         env = create_environment(templates_dir)
         output = render_page(env, "truncated.html", items=[], limit=2)
-        assert output == "visible=;hidden=0"
+        assert output == "visible=;hidden_items=;hidden_count=0"
