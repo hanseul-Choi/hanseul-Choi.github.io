@@ -17,6 +17,7 @@
       "ArgoCD",
       "Helm",
       "Cilium",
+      "Kyverno",
       "AWS",
       "PostgreSQL",
       "Prometheus",
