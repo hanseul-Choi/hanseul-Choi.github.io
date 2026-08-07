@@ -6,7 +6,7 @@ _2025.03 ~ 현재_
 
 ## 기술
 
-- **Platform:** Kubernetes, kubeadm, CRI-O, Cilium, Helm, Argo CD, Jenkins, Kong
+- **Platform:** Kubernetes, kubeadm, CRI-O, Cilium, Helm, Argo CD, Jenkins, Kong, Kyverno
 - **Cloud & Infrastructure:** AWS, On-Premise, ALB, NLB, Harbor, Proxy, Firewall
 - **GPU & AI Serving:** H100, A100, V100, MIG, NVLink, InfiniBand, vLLM
 - **Messaging & Database:** Kafka, PostgreSQL, MariaDB, Elasticsearch
@@ -62,7 +62,12 @@ CI/CD 및 모니터링 체계를 통합 운영하고, 신규 모델 배포와 �
 
 - Kong, 사내 Load Balancer, ALB, NLB, NodePort 통신 경로 운영, 내부망·외부망 방화벽 및 Proxy Whitelist 관리
 - CRI-O·애플리케이션·Node별 Proxy·`NO_PROXY` 정책 관리, Kong TLS 인증서와 API Endpoint 운영
-- Kubernetes Secret 및 환경변수 기반 민감정보 관리, 개발계에 Vault를 적용한 Secret 중앙관리 체계 도입
+- CRI-O Proxy 누락(문제 4)·Proxy Whitelist 누락(문제 6) 같은 컨테이너 런타임·개별 사고 대응에
+  그치지 않고, Kyverno ClusterPolicy로 Deployment 컨테이너 env에 Proxy 환경변수
+  (`HTTP_PROXY`/`HTTPS_PROXY`/`NO_PROXY`)를 고정 주입해 애플리케이션별 수동 설정 누락을
+  구조적으로 방지
+- Kubernetes Secret 및 환경변수 기반 민감정보 관리, 개발계에 Vault Agent Injector를 적용해
+  GPT API Key 등 민감 정보를 사이드카로 자동 주입하는 Secret 중앙관리 체계 도입
 - 금융권 고객사 완전 폐쇄망 AI 플랫폼 구축·운영 지원, AWS OpenAPI 클러스터와 온프레미스 모델 서버 간 방화벽 통신 관리
 
 **모니터링 및 장애 대응**

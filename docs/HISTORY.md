@@ -254,3 +254,17 @@
 - **왜**: "다른 프로젝트 회고도 한번 훑어봐줄래" 요청에 대한 리뷰 결과 보고 후, "AIOps 방향
   항목을 추가해줘. 1번[SQLAlchemy] 그대로 두고 2번[Prometheus/Grafana]도 태그랑 다 넣어줘.
   실제로 구성되어있어"라는 확정 답변을 받아 진행.
+
+## 2026-08-07 — enterprise-ai-platform에 Vault Agent Injector·Kyverno 내용 추가
+
+- **무엇**: `## 기술` Platform 목록에 Kyverno 추가, `역할 > 네트워크 및 보안` 절에 두 항목
+  보강 — (1) Vault를 Vault Agent Injector 방식으로 GPT API Key 등 민감 정보에 적용했다고
+  구체화, (2) Kyverno ClusterPolicy로 Deployment 컨테이너 env에 Proxy 환경변수를 고정
+  주입하는 내용 신규 추가(문제 4 CRI-O Proxy 누락, 문제 6 Proxy Whitelist 누락과 연결지어
+  서술 — 개별 사고 대응이 아닌 구조적 방지책이라는 맥락). `data/projects.yaml` 태그에도
+  Kyverno 추가.
+- **왜**: "Vault로 env 구성했다는 내용과 Kyverno를 통해 proxy 세팅을 진행했다는 내용도
+  적어줬으면 좋겠어" 요청 — 정확한 적용 방식(Vault Agent Injector, GPT API Key 대상 /
+  Kyverno는 컨테이너 env 전용, 문제 4·6과 관련)을 사용자에게 확인 후 반영. 문제 4의 CRI-O
+  이슈가 어느 노드 계층에서 발생했는지(Worker vs Control Plane) 함께 확인했고, 기존 문서의
+  "Worker Node" 서술이 맞다는 결론이라 그 부분은 수정하지 않음.
