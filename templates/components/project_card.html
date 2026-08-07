@@ -2,7 +2,7 @@
 {% set detail = project_details.get(project.slug) if project_details is defined else none %}
 {% set shown_achievements = project.achievements | truncated(2) %}
 {% set shown_tags = project.tags | truncated(5) %}
-<article class="project-card" data-tags="{{ project.tags | join(' ') }}">
+<article class="project-card">
   <div class="project-thumb">
     {% if project.image_url %}
     <img src="{{ project.image_url }}" alt="{{ project.title }} screenshot">

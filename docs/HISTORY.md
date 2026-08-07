@@ -209,3 +209,18 @@
   (1) enterprise-ai-platform의 NAS 모델 로딩 병목 개선 후 정확한 로딩 시간, (2) 
   realtime-voice-translation의 API Pod 메모리 증가 폭·개선 후 수치. 답변 오면 각 성과 불릿에
   반영 예정.
+
+## 2026-08-07 — `/projects/` 태그 필터 기능 제거
+
+- **무엇**: 카테고리 그룹핑(섹션 헤더)은 유지하되, 상단의 기술 태그 필터 칩(전체 + 태그별
+  클릭 필터링) 기능 자체를 제거. `templates/projects.html`을 필터 이전의 단순 카테고리
+  그룹핑 구조로 되돌리고, 이제 안 쓰는 것들을 함께 정리:
+  - `pipeline._collect_tags()`와 `all_tags` context 변수 — 필터 칩 목록 생성용이었음
+  - `project_card.html`의 `data-tags` 속성 — 필터의 CSS 매칭용이었음, 카드 자체 렌더링에는
+    불필요
+  - `static/css/main.css`의 `.projects-filterable`/`.tag-filter-input`/`.tag-chip`,
+    `.sr-only`(필터 라벨에만 쓰였음)
+  - 관련 pytest(`TestCollectTags`, 태그 필터 wiring 테스트) 제거
+- **왜**: "project 눌렀을 때 태그별로 프로젝트 보이는 기능 이거 굳이 안필요한거 같아" 요청.
+- **위험/후속 작업**: 카드 내부의 태그 "+N" 펼치기/접기(`.tags-more`)는 이 필터와 별개
+  기능이라 그대로 유지함 — 태그를 숨김/펼침하는 것이지 프로젝트 목록을 필터링하는 게 아님.
