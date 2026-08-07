@@ -20,7 +20,10 @@
     </ul>
     {% if shown_achievements.hidden_count %}
     <details class="achievements-more">
-      <summary>+{{ shown_achievements.hidden_count }}개 더</summary>
+      <summary>
+        <span class="label-show">+{{ shown_achievements.hidden_count }}개 더</span>
+        <span class="label-hide">가리기</span>
+      </summary>
       <ul class="achievements">
         {% for item in shown_achievements.hidden %}<li>{{ item }}</li>{% endfor %}
       </ul>

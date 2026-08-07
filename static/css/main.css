@@ -612,10 +612,20 @@ main {
 }
 
 .achievements-more {
+  display: flex;
+  flex-direction: column;
   margin-top: -0.1rem;
 }
 
+/* Closed: the "+N개 더" trigger sits where it always has, right after the
+   visible bullets (order: 1, before the — currently empty-looking —
+   content). Open: the same <details>/<summary> toggle is still the only
+   control (no JS), but flex `order` visually moves it below the now-
+   revealed bullets and its label swaps to "가리기", so the affordance
+   reads as "collapse" rather than a second, separate "+N개 더" sitting
+   above content that's already showing. */
 .achievements-more summary {
+  order: 1;
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
@@ -623,6 +633,11 @@ main {
   color: var(--color-text-muted);
   cursor: pointer;
   list-style: none;
+}
+
+.achievements-more[open] summary {
+  order: 3;
+  margin-top: 0.4rem;
 }
 
 .achievements-more summary::-webkit-details-marker {
@@ -649,7 +664,20 @@ main {
   border-radius: var(--radius-sm);
 }
 
+.achievements-more .label-hide {
+  display: none;
+}
+
+.achievements-more[open] .label-show {
+  display: none;
+}
+
+.achievements-more[open] .label-hide {
+  display: inline;
+}
+
 .achievements-more .achievements {
+  order: 2;
   margin-top: 0.5rem;
 }
 
