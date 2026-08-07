@@ -72,6 +72,8 @@
       "RTSP",
       "Nginx",
       "PostgreSQL",
+      "Prometheus",
+      "Grafana",
       "Docker",
       "Coturn",
     ]
