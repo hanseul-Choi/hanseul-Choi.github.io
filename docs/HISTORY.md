@@ -180,3 +180,18 @@
   세션의 Emulation 뷰포트 오버라이드와 좌표계가 안 맞아 잘린 스크린샷이 계속 빈 영역만 나오는
   문제가 있었음 — 클리핑 대신 전체 페이지 스크린샷 + `scrollIntoView`로 우회. `getBoundingClientRect()`
   기반 좌표를 `Page.captureScreenshot`의 `clip`에 그대로 넘기지 말 것.
+
+## 2026-08-07 — 태그 "+N"도 같은 방식으로 펼치기/접기
+
+- **무엇**: 성과 불릿에 적용한 것과 같은 "누르면 펼쳐지고, 펼치면 맨 끝에 접기 버튼" 패턴을
+  태그 목록의 "+N" 오버플로 표시에도 적용. 태그는 세로 목록이 아니라 줄바꿈되는 pill
+  가로 목록이라 achievements와 같은 flex-column `order` 트릭 대신, `.tags`(이미 flex-wrap)
+  안에 `.tags-toggle`(`<details>` 감싼 `<li>`)과 `.tag-hidden`(숨겨진 태그) `<li>`들을 평평한
+  형제로 두고 flex `order` + `:has()`로 구현: 닫힘 상태는 `.tags-toggle`이 순서상 먼저(보이는
+  태그 바로 뒤), 열림 상태(`.tags-toggle:has(> details[open])`)는 숨은 태그들을 먼저 보여주고
+  `.tags-toggle` 자신의 order를 더 뒤로 밀어서 "가리기"가 펼쳐진 태그 뒤에 오게 함. 여전히
+  JS 없음.
+- **왜**: "그 태그도 마찬가지로 눌리고 접히는 느낌이었으면 좋겠어" 요청 — achievements에 이미
+  적용한 패턴과의 일관성 요구.
+- **위험/후속 작업**: 없음 — 헤드리스 Chrome + CDP로 열림/닫힘 두 상태 모두 스크린샷과 DOM
+  속성(`order`, 숨김 태그의 `display`)으로 확인함.
